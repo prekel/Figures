@@ -21,11 +21,11 @@ namespace Figures
 {
 	public class Body
 	{
-		Vector _f, _a, _v, _p, _v0;
-		double _x, _y, _r, _m, _t, _μ, _fps, _spf, _fr, _kv;
-		const double g = 9.80665;
+		private Vector _f, _a, _v, _p, _v0;
+		private double _x, _y, _r, _m, _t, _μ, _fps, _spf, _fr, _kv;
+		private const double G = 9.80665;
 
-		/// <summary> Масса </summary>
+		/// <summary> Масcа </summary>
 		public double Mass { get { return _m; } set { _m = value; } }
 		/// <summary> Абцисса центра </summary>
 		public double X { get { return _x; } set { _x = value; } }
@@ -59,26 +59,24 @@ namespace Figures
 
 		/// <summary> Фигура </summary>
 		public Ellipse Figure;
-
-		/// <summary> Диспетчер </summary>
-		Dispatcher Disp;
+	    /// <summary> Диспетчер </summary>
+		private readonly Dispatcher Disp;
 		/// <summary> Таймер </summary>
-		Timer timer = new Timer();
+		private Timer timer = new Timer();
 		/// <summary> Массив с остальными телами </summary>
-		Body[] BodyList;
+		private readonly Body[] BodyList;
 
-		//StreamWriter Out = new StreamWriter("v.txt");
-
-		/// <summary> Создаёт тело </summary>
-		/// <param name="x"> Абцисса центра (px) </param>
-		/// <param name="y"> Ордината центра (px) </param>
-		/// <param name="r"> Радиус (px) </param>
-		/// <param name="fps"> Кадры в секунду </param>
-		/// <param name="m"> Масса (кг) </param>
-		/// <param name="speed"> Коэффициент скорост и</param>
-		/// <param name="bodylist"> Массив с остальными телами </param>
-		/// <param name="disp"> (Dispatcher) </param>
-		public Body(double x, double y, double r, double fps, double m, double mu, double speed, ref Body[] bodylist, ref Dispatcher disp)
+	    /// <summary> Создаёт тело </summary>
+	    /// <param name="x"> Абцисса центра (px) </param>
+	    /// <param name="y"> Ордината центра (px) </param>
+	    /// <param name="r"> Радиус (px) </param>
+	    /// <param name="fps"> Кадры в секунду </param>
+	    /// <param name="m"> Масса (кг) </param>
+	    /// <param name="mu"> Коэффициент трения </param>
+	    /// <param name="speed"> Коэффициент скорости </param>
+	    /// <param name="bodylist"> Массив с остальными телами </param>
+	    /// <param name="disp"> (Dispatcher) </param>
+	    public Body(double x, double y, double r, double fps, double m, double mu, double speed, ref Body[] bodylist, ref Dispatcher disp)
 		{
 			Figure = new Ellipse
 			{
@@ -98,26 +96,26 @@ namespace Figures
 		/// <summary> Происходит при нажатии </summary>
 		public void MouseUp(object sender, MouseButtonEventArgs e)
 		{
-			var Coords = e.GetPosition(Figure);
+			var coords = e.GetPosition(Figure);
 			if (e.ChangedButton.ToString() == "Right")
 			{
 				timer.Stop();
 				return;
 			}
-			Coords.X -= Radius;
+			coords.X -= Radius;
 			//Coords.Y -= Figure.Height / 2;
-			Coords.Y = -Coords.Y + Radius;
+			coords.Y = -coords.Y + Radius;
 
 			//var l = Math.Sqrt(Coords.X * Coords.X + Coords.Y * Coords.Y);
 			//var angle = Vector.AngleBetween(new Vector(1, 0), new Vector(Coords.X, Coords.Y));
 
 			Time = 0;
 
-			Velocity0 = new Vector(-Coords.X, -Coords.Y);
+			Velocity0 = new Vector(-coords.X, -coords.Y) * KV;
 			Velocity = Velocity0;
 			Accelerate = -Velocity;
 			_a.Normalize();
-			Friction = Mu * Mass * g;
+			Friction = Mu * Mass * G;
 			Accelerate *= Friction;
 
 			Momentum = Velocity * Mass;
@@ -144,7 +142,6 @@ namespace Figures
 		public void Move(object sender, ElapsedEventArgs e)
 		{
 			Time += Spf;
-			var t = Time;
 
 			//Velocity = Accelerate * (t * t * 0.5);
 			//Velocity = Accelerate * (t * t * 0.5);
@@ -158,16 +155,16 @@ namespace Figures
 			//Momentum = Velocity * Mass;
 			//Friction -= Friction * (Spf / 1000);
 
+			Velocity = Momentum / Mass;
+			var VelocityD = Accelerate * (Time * Time * 0.5);
+			Velocity = Velocity0 + VelocityD;
 			Momentum = Velocity * Mass;
 
-			var VelocityD = Accelerate * (t * t * 0.5);
-			Velocity = Velocity0 + VelocityD;
-			if (Velocity0.LengthSquared < VelocityD.LengthSquared)
-			{
-				timer.Stop(); return;
-			}
+			//Остановка при маленькой скорости
+			if (Velocity0.LengthSquared < VelocityD.LengthSquared) { timer.Stop(); return; }
 
-			var VelocityEps = Velocity.LengthSquared / Fps * KV;
+			//Остановка при столкновении
+			var VelocityEps = Velocity.LengthSquared / Fps / KV;
 			foreach (var body in BodyList)
 			{
 				if (body != this)
@@ -187,13 +184,13 @@ namespace Figures
 			}
 
 			//Out.WriteLine(Velocity);
-			//if (Velocity.LengthSquared < 1) { 
+			//if (Velocity.LengthSquared < 1) {
 			//	timer.Stop(); return; }
 
 			//Velocity *= Friction;
 
-			X += Velocity.X / Fps * KV;
-			Y += Velocity.Y / Fps * KV;
+			X += Velocity.X / Fps;// * KV;
+			Y += Velocity.Y / Fps;// * KV;
 			Action action = () => Figure.Margin = new Thickness(X - Radius, 0, 0, Y - Radius);
 			try { Disp.Invoke(action); }
 			catch { return; }

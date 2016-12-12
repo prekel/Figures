@@ -25,19 +25,19 @@ namespace Figures
 			InitializeComponent();
 
 			var bodies = new Body[4];
-			var Disp = Dispatcher;
+			var disp = Dispatcher;
 
-			bodies[0] = new Body(330, 170, 70, 100, 0.1, 0.002, 10, ref bodies, ref Disp);
-			grid.Children.Add(bodies[0].Figure);
+			bodies[0] = new Body(330, 170, 70, 100, 0.1, 0.001, 20, ref bodies, ref disp);
+			Grid.Children.Add(bodies[0].Figure);
 
-			bodies[1] = new Body(330, 370, 70, 100, 0.1, 0.001, 30, ref bodies, ref Disp);
-			grid.Children.Add(bodies[1].Figure);
+			bodies[1] = new Body(330, 370, 70, 100, 0.1, 0.001, 50, ref bodies, ref disp);
+			Grid.Children.Add(bodies[1].Figure);
 
-			bodies[2] = new Body(600, 500, 100, 100, 0.5, 0.002, 5, ref bodies, ref Disp);
-			grid.Children.Add(bodies[2].Figure);
+			bodies[2] = new Body(600, 500, 100, 100, 0.5, 0.002, 10, ref bodies, ref disp);
+			Grid.Children.Add(bodies[2].Figure);
 
-			bodies[3] = new Body(900, 500, (25.0 / 2) * (1280 / 325.0), 100, 6.45 / 1000, 0.005, (1280 / 325.0) * 10, ref bodies, ref Disp);
-			grid.Children.Add(bodies[3].Figure);
+			bodies[3] = new Body(900, 500, (25.0 / 2) * (1280 / 325.0), 100, 6.45 / 1000, 0.005, 30, ref bodies, ref disp);
+			Grid.Children.Add(bodies[3].Figure);
 
 		}
 
