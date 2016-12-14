@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Timers;
 using System.Windows.Threading;
 using System.IO;
+using System.Diagnostics;
 
 namespace Figures
 {
@@ -63,8 +64,10 @@ namespace Figures
 		private readonly Dispatcher Disp;
 		/// <summary> Таймер </summary>
 		private Timer timer;// = new Timer();
-		/// <summary> Массив с остальными телами </summary>
+							/// <summary> Массив с остальными телами </summary>
 		private Body[] BodyList;
+		/// <summary> Время </summary>
+		private Stopwatch Clock;
 
 		/// <summary> Создаёт тело </summary>
 		/// <param name="x"> Абцисса центра (px) </param>
@@ -138,7 +141,7 @@ namespace Figures
 			coords.X -= Radius;
 			coords.Y = -coords.Y + Radius;
 
-			Time = 0;
+			//Time = 0;
 			Velocity0 = new Vector(-coords.X, -coords.Y) * KV;
 			Velocity = Velocity0;
 			Accelerate = -Velocity;
@@ -146,6 +149,23 @@ namespace Figures
 			Accelerate *= Friction;
 
 			Momentum = Velocity * Mass;
+		}
+
+		/// <summary> Старт при нажатии </summary>
+		public void StartByClick2(object sender, MouseButtonEventArgs e)
+		{
+			var coords = e.GetPosition(Figure);
+			if (e.ChangedButton.ToString() == "Right")
+			{
+				Momentum = new Vector(0, 0);
+			}
+			else
+			{
+				coords.X -= Radius;
+				coords.Y = -coords.Y + Radius;
+			}
+			Momentum = new Vector(-coords.X, -coords.Y) * KV * Mass;
+			StartMoveByMomentum1(Momentum);
 		}
 
 		/// <summary> Старт при нажатии </summary>
@@ -189,7 +209,7 @@ namespace Figures
 
 			timer.Stop();
 			timer = new Timer { Interval = Spf, AutoReset = true, Enabled = true };
-			timer.Elapsed += Move;
+			timer.Elapsed += Step0;
 			timer.Start();
 		}
 
@@ -227,15 +247,15 @@ namespace Figures
 			finally
 			{
 				timer = new Timer { Interval = Spf, AutoReset = true, Enabled = true };
-				timer.Elapsed += Move;
+				timer.Elapsed += Step0;
 				timer.Start();
 			}
 		}
-		
+
 		/// <summary> Старт при столкновени </summary>
 		public void StartMoveByMomentum1(Vector momentum)
 		{
-			Time = 0;
+			Clock.Restart();
 			Momentum = momentum;
 			Velocity0 = Momentum / Mass;
 			Velocity = Velocity0;
@@ -244,16 +264,106 @@ namespace Figures
 			Accelerate *= Friction;
 		}
 
-		public void Step(object sender, ElapsedEventArgs e)
-		{
-			foreach (var body in BodyList)
-			{
 
+		public static void Move(object[] obj)
+		{
+			var clock = new Stopwatch();
+			var bodies = obj[0] as Body[];
+			double FPS = 0;
+			var disp = obj[1] as Dispatcher;
+			var fpsCount = obj[2] as TextBlock;
+			while (true)
+			{
+				clock.Restart();
+				foreach (var b in bodies)
+				{
+					if (b.Momentum.LengthSquared == 0)
+					{
+						continue;
+					}
+
+					var t = b.Clock.ElapsedMilliseconds / 1000.0;
+					var velocityD = b.Accelerate * (b.Time * b.Time * 0.5);
+
+					//Остановка при маленькой скорости
+					if (b.Velocity0.LengthSquared < velocityD.LengthSquared)
+					{
+						//timer.Stop();
+						b.Velocity = new Vector(0, 0);
+						b.Momentum = b.Velocity;
+						continue;
+					}
+
+					b.Velocity = b.Momentum / b.Mass;
+					b.Velocity = b.Velocity0 + velocityD;
+					b.Momentum = b.Velocity * b.Mass;
+
+					b.X += b.Velocity.X;
+					b.Y += b.Velocity.Y;
+				}
+				foreach (var b in bodies)
+				{
+					if (b.Momentum.LengthSquared == 0)
+					{
+						continue;
+					}
+					//Столкновение
+					foreach (var body in bodies)
+					{
+						if (body != b)// && b.Momentum.LengthSquared > 0)
+						{
+							//var m = Math.Sqrt((X - body.X) * (X - body.X) + (Y - body.Y) * (Y - body.Y));
+							var m2 = (b.X - body.X) * (b.X - body.X) + (b.Y - body.Y) * (b.Y - body.Y);
+							var r = b.Radius + body.Radius;
+							var r2 = r * r;
+							if (m2 <= r2)
+							{
+								var vb = new Vector(body.X - b.X, body.Y - b.Y);
+								vb.Normalize();
+								vb *= Math.Sqrt(m2) - r;
+								b.X += vb.X;
+								b.Y += vb.Y;
+								body.Momentum = new Vector(body.X - b.X, body.Y - b.Y);
+
+								var temp = body.Momentum;
+								temp.Normalize();
+								body.Momentum = temp;
+
+								body.Momentum *= b.Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(b.Momentum, body.Momentum) * 180 / Math.PI));
+
+								b.Momentum = b.Momentum - body.Momentum;
+
+								b.StartMoveByMomentum1(b.Momentum);
+								body.StartMoveByMomentum1(body.Momentum);
+								//break;
+								//goto jkl;
+							}
+						}
+					}
+				}
+
+				//jkl:;
+
+				Action action = () =>
+				{
+					foreach (var b in bodies)
+					{
+						if (b.Momentum.LengthSquared < 1)
+						{
+							continue;
+						}
+						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
+						fpsCount.Text = FPS.ToString();
+					}
+				};
+				try { disp.Invoke(action); }
+				catch { /*ignored*/ }
+				FPS = 1000 / clock.ElapsedMilliseconds;
 			}
 		}
 
 		/// <summary> Шаг </summary>
-		public void Move(object sender, ElapsedEventArgs e)
+		public void Step0(object sender, ElapsedEventArgs e)
 		{
 			Time += Spf;
 
