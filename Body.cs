@@ -67,7 +67,7 @@ namespace Figures
 							/// <summary> Массив с остальными телами </summary>
 		private Body[] BodyList;
 		/// <summary> Время </summary>
-		private Stopwatch Clock;
+		private Stopwatch Clock = new Stopwatch();
 
 		/// <summary> Создаёт тело </summary>
 		/// <param name="x"> Абцисса центра (px) </param>
@@ -126,7 +126,7 @@ namespace Figures
 			};
 			X = x; Y = y; Radius = r; Mass = m; Mu = mu; KV = speed;
 			Friction = Mu * Mass * G;
-			Figure.MouseUp += StartByClick1;
+			Figure.MouseUp += StartByClick2;
 		}
 
 		/// <summary> Старт при нажатии </summary>
@@ -163,8 +163,8 @@ namespace Figures
 			{
 				coords.X -= Radius;
 				coords.Y = -coords.Y + Radius;
+				Momentum = new Vector(-coords.X, -coords.Y) * KV * Mass;
 			}
-			Momentum = new Vector(-coords.X, -coords.Y) * KV * Mass;
 			StartMoveByMomentum1(Momentum);
 		}
 
@@ -265,13 +265,18 @@ namespace Figures
 		}
 
 
-		public static void Move(object[] obj)
+		public static void Move(object Param)
 		{
+			var obj = Param as object[];
 			var clock = new Stopwatch();
 			var bodies = obj[0] as Body[];
 			double FPS = 0;
 			var disp = obj[1] as Dispatcher;
 			var fpsCount = obj[2] as TextBlock;
+			var mspflimit = 1000 / ((int)obj[3]);
+			int fpscountcapacity = 10;
+			var fpsdeque = new Queue<double>(fpscountcapacity);
+			var fpssum = 0.0;
 			while (true)
 			{
 				clock.Restart();
@@ -283,7 +288,7 @@ namespace Figures
 					}
 
 					var t = b.Clock.ElapsedMilliseconds / 1000.0;
-					var velocityD = b.Accelerate * (b.Time * b.Time * 0.5);
+					var velocityD = b.Accelerate * (t * t * 0.5);
 
 					//Остановка при маленькой скорости
 					if (b.Velocity0.LengthSquared < velocityD.LengthSquared)
@@ -297,9 +302,9 @@ namespace Figures
 					b.Velocity = b.Momentum / b.Mass;
 					b.Velocity = b.Velocity0 + velocityD;
 					b.Momentum = b.Velocity * b.Mass;
-
-					b.X += b.Velocity.X;
-					b.Y += b.Velocity.Y;
+					
+					b.X += b.Velocity.X / (fpssum / fpsdeque.Count);
+					b.Y += b.Velocity.Y / (fpssum / fpsdeque.Count);
 				}
 				foreach (var b in bodies)
 				{
@@ -336,29 +341,50 @@ namespace Figures
 								b.StartMoveByMomentum1(b.Momentum);
 								body.StartMoveByMomentum1(body.Momentum);
 								//break;
-								//goto jkl;
+								goto jkl;
 							}
 						}
 					}
 				}
 
-				//jkl:;
+				jkl:;
 
 				Action action = () =>
 				{
 					foreach (var b in bodies)
 					{
-						if (b.Momentum.LengthSquared < 1)
+						if (b.Momentum.LengthSquared == 0)
 						{
 							continue;
 						}
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
-						fpsCount.Text = FPS.ToString();
+						//fpsCount.Text = FPS.ToString();
+						fpsCount.Text = ((int)(fpssum / fpsdeque.Count)).ToString();
 					}
 				};
 				try { disp.Invoke(action); }
-				catch { /*ignored*/ }
-				FPS = 1000 / clock.ElapsedMilliseconds;
+				catch { return; }
+				
+				if (clock.ElapsedMilliseconds < mspflimit)
+				{
+					try { System.Threading.Thread.Sleep(mspflimit - (int)clock.ElapsedMilliseconds); }
+					catch { /*ignored*/ };
+				}
+
+				try
+				{
+					FPS = 1000.0 / clock.ElapsedMilliseconds;
+					fpsdeque.Enqueue(FPS);
+					fpssum += FPS;
+					if (fpsdeque.Count > fpscountcapacity)
+					{
+						fpssum -= fpsdeque.Dequeue();
+					}
+				}
+				catch
+				{
+					FPS = 0;
+				}
 			}
 		}
 

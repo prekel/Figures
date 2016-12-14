@@ -33,18 +33,30 @@ namespace Figures
 
 			//var disp = Dispatcher;
 
-			for (var i = 0; i < 10; i++)
+			//var r = (1280 / 325.0) * 25 / 2;
+			var r = 40;
+			var m = 100000 / 1000.0;
+			var mu = 10;
+			var ck = 30;
+
+			for (var i = 0; i < 5; i++)
 			{
-				bodies[i] = new Body(200 + i * 100 - (i + 1) / 5 * 400, 300 + (i + 1) / 5 * 300, 40, 1, 0.01, 70, Brushes.Tomato, Brushes.DarkOliveGreen);
+				bodies[i] = new Body(200 + i * 100, 600, r, m, mu, ck, Brushes.AliceBlue, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
 			}
 
-			var fps = 50.0;
+			for (var i = 5; i < 10; i++)
+			{
+				bodies[i] = new Body(-300 + i * 100, 300, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
+				Grid.Children.Add(bodies[i].Figure);
+			}
+
+			var fps = 100;
 			//clock = new Stopwatch();
 			//clock.Start();
 
 			var cycle = new Thread(new ParameterizedThreadStart(Body.Move));
-			cycle.Start(new object[] { bodies, Dispatcher, fpsCount});
+			cycle.Start(new object[] { bodies, Dispatcher, fpsCount, fps});
 
 		}
 
