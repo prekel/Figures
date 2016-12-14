@@ -93,7 +93,29 @@ namespace Figures
 			};
 			X = x; Y = y; Radius = r; Fps = fps; Mass = m; Mu = mu; KV = speed; Disp = disp; BodyList = bodylist;
 			Friction = Mu * Mass * G;
-			Figure.MouseUp += StartByClick;
+			Figure.MouseUp += StartByClick1;
+		}
+
+		/// <summary> Старт при нажатии </summary>
+		public void StartByClick1(object sender, MouseButtonEventArgs e)
+		{
+			var coords = e.GetPosition(Figure);
+			if (e.ChangedButton.ToString() == "Right")
+			{
+				//timer.Stop();
+				return;
+			}
+			coords.X -= Radius;
+			coords.Y = -coords.Y + Radius;
+
+			Time = 0;
+			Velocity0 = new Vector(-coords.X, -coords.Y) * KV;
+			Velocity = Velocity0;
+			Accelerate = -Velocity;
+			_a.Normalize();
+			Accelerate *= Friction;
+
+			Momentum = Velocity * Mass;
 		}
 
 		/// <summary> Старт при нажатии </summary>
@@ -179,8 +201,26 @@ namespace Figures
 				timer.Start();
 			}
 		}
+		
+		/// <summary> Старт при столкновени </summary>
+		public void StartMoveByMomentum1(Vector momentum)
+		{
+			Time = 0;
+			Momentum = momentum;
+			Velocity0 = Momentum / Mass;
+			Velocity = Velocity0;
+			Accelerate = -Velocity;
+			_a.Normalize();
+			Accelerate *= Friction;
+		}
 
+		public void Step(object sender, ElapsedEventArgs e)
+		{
+			foreach (var body in BodyList)
+			{
 
+			}
+		}
 
 		/// <summary> Шаг </summary>
 		public void Move(object sender, ElapsedEventArgs e)
@@ -201,6 +241,9 @@ namespace Figures
 			Velocity = Velocity0 + velocityD;
 			Momentum = Velocity * Mass;
 
+			X += Velocity.X / Fps;
+			Y += Velocity.Y / Fps;
+
 			//Столкновение
 			//var VelocityEps = Velocity.LengthSquared / Fps / KV * 3;
 			//var velocityEps = Velocity.LengthSquared / Fps / KV;
@@ -210,7 +253,7 @@ namespace Figures
 			//var VelocityEps = 0;
 			foreach (var body in BodyList)
 			{
-				if (body != this && body.Momentum.LengthSquared < 10)
+				if (body != this)// && body.Momentum.LengthSquared == 0)
 				{
 					//var m = Math.Sqrt((X - body.X) * (X - body.X) + (Y - body.Y) * (Y - body.Y));
 					var m2 = (X - body.X) * (X - body.X) + (Y - body.Y) * (Y - body.Y);
@@ -242,8 +285,8 @@ namespace Figures
 						body._p.Normalize();
 						body.Momentum *= Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(Momentum, body.Momentum) * 180 / Math.PI));
 						Momentum = Momentum - body.Momentum;
-						body.StartMoveByMomentum(body.Momentum);
 						MoveEllipse(Figure, new Thickness(X - Radius, 0, 0, Y - Radius));
+						body.StartMoveByMomentum(body.Momentum);
 						return;
 					}
 				}
@@ -257,8 +300,8 @@ namespace Figures
 
 			//Velocity *= Friction;
 
-			X += Velocity.X / Fps;// * KV;
-			Y += Velocity.Y / Fps;// * KV;
+			//X += Velocity.X / Fps;// * KV;
+			//Y += Velocity.Y / Fps;// * KV;
 			MoveEllipse(Figure, new Thickness(X - Radius, 0, 0, Y - Radius));
 
 		}
