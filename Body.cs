@@ -24,7 +24,7 @@ namespace Figures
 	{
 		private Vector _f, _a, _v, _p, _v0;
 		private double _x, _y, _r, _m, _t, _μ, _fps, _spf, _fr, _kv;
-		private const double G = 9.80665;
+		private const double G = 9.80665, FK = 10e5;
 
 		/// <summary> Масcа </summary>
 		public double Mass { get { return _m; } set { _m = value; } }
@@ -125,7 +125,7 @@ namespace Figures
 				VerticalAlignment = VerticalAlignment.Bottom
 			};
 			X = x; Y = y; Radius = r; Mass = m; Mu = mu; KV = speed;
-			Friction = Mu * Mass * G;
+			Friction = Mu * Mass * G * FK;
 			Figure.MouseUp += StartByClick2;
 		}
 
@@ -383,7 +383,13 @@ namespace Figures
 				}
 				catch
 				{
-					FPS = 0;
+					FPS = 1000.0;
+					fpsdeque.Enqueue(FPS);
+					fpssum += FPS;
+					if (fpsdeque.Count > fpscountcapacity)
+					{
+						fpssum -= fpsdeque.Dequeue();
+					}
 				}
 			}
 		}
