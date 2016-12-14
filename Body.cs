@@ -62,7 +62,7 @@ namespace Figures
 		/// <summary> Диспетчер </summary>
 		private readonly Dispatcher Disp;
 		/// <summary> Таймер </summary>
-		private Timer timer = new Timer();
+		private Timer timer;// = new Timer();
 		/// <summary> Массив с остальными телами </summary>
 		private Body[] BodyList;
 
@@ -92,6 +92,36 @@ namespace Figures
 				VerticalAlignment = VerticalAlignment.Bottom
 			};
 			X = x; Y = y; Radius = r; Fps = fps; Mass = m; Mu = mu; KV = speed; Disp = disp; BodyList = bodylist;
+			Friction = Mu * Mass * G;
+			Figure.MouseUp += StartByClick1;
+		}
+
+		/// <summary> Создаёт тело </summary>
+		/// <param name="x"> Абцисса центра (px) </param>
+		/// <param name="y"> Ордината центра (px) </param>
+		/// <param name="r"> Радиус (px) </param>
+		/// <param name="fps"> Кадры в секунду </param>
+		/// <param name="m"> Масса (кг) </param>
+		/// <param name="mu"> Коэффициент трения </param>
+		/// <param name="speed"> Коэффициент скорости </param>
+		/// <param name="bodylist"> Массив с остальными телами </param>
+		/// <param name="fill"></param>
+		/// <param name="fillstroke"></param>
+		/// <param name="disp"> (Dispatcher) </param>
+		public Body(double x, double y, double r, double m, double mu, double speed, Brush fill, Brush fillstroke)
+		{
+			Figure = new Ellipse
+			{
+				Margin = new Thickness(x - r, 0, 0, y - r),
+				Fill = fill,
+				StrokeThickness = 1,
+				Stroke = fillstroke,
+				Width = r * 2,
+				Height = r * 2,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Bottom
+			};
+			X = x; Y = y; Radius = r; Mass = m; Mu = mu; KV = speed;
 			Friction = Mu * Mass * G;
 			Figure.MouseUp += StartByClick1;
 		}
