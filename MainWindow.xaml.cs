@@ -23,13 +23,18 @@ namespace Figures
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		//Body[] bodies = new Body[16];
+        int N = 500, n = 0;
+		Body[] bodies = new Body[500];
+        bool F;
 
 		//Stopwatch clock;
 
 		public MainWindow()
 		{
 			InitializeComponent();
+
+            //Grid.MouseUp += Grid_MouseUp;
+            MouseUp += MainWindow_MouseUp;
 
 			//var disp = Dispatcher;
 
@@ -38,19 +43,23 @@ namespace Figures
 			var m = 10 / 1000.0;
 			var mu = 0.1;
 			var ck = 40;
-			var n = 12;
-			var bodies = new Body[n];
+            var M = 40;
+			//var n = 12;
+            //var N = 50;
+			//var bodies = new Body[N];
 
-			for (var i = 0; i < n / 2; i++)
+			for (var i = 0; i < M / 2; i++)
 			{
-				bodies[i] = new Body(200 + i * 110, 150, r, m, mu, ck, Brushes.AliceBlue, Brushes.DarkOliveGreen);
+				bodies[i] = new Body(150 + i * 105, 150, r, m, mu, ck, Brushes.AliceBlue, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
+                n++;
 			}
 
-			for (var i = n / 2; i < n; i++)
+			for (var i = M / 2; i < M; i++)
 			{
-				bodies[i] = new Body(200 + (i - n / 2) * 110, 650, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
+				bodies[i] = new Body(150 + (i - M / 2) * 105, 650, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
+                n++;
 			}
 
 			var fps = 100;
@@ -58,10 +67,29 @@ namespace Figures
 			//clock.Start();
 
 			var cycle = new Thread(new ParameterizedThreadStart(Body.Move));
-			cycle.Start(new object[] { bodies, Dispatcher, fpsCount, fps});
+			cycle.Start(new object[] { bodies, Dispatcher, fpsCount, fps } );
 
 		}
 
+        void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (F)
+            {
+                bodies[n] = new Body(e.GetPosition(Grid).X, e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
+                Grid.Children.Add(bodies[n].Figure);
+                n++;
+            }
+        }
+
+        //void Grid_MouseUp(object sender, MouseButtonEventArgs e)
+        //{
+        //    if (F)
+        //    {
+        //        bodies[n] = new Body(e.GetPosition(Grid).X, e.GetPosition(Grid).Y, 50, 10/1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
+        //        Grid.Children.Add(bodies[n].Figure);
+        //        n++;
+        //    }
+        //}
 
 		public Vector Norm(Vector a)
 		{
@@ -69,6 +97,11 @@ namespace Figures
 			b.Normalize();
 			return b;
 		}
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            F = (F)?false:true;
+        }
 
 		//public void Step(object sender, ElapsedEventArgs e)
 		//public void Step()

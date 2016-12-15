@@ -282,10 +282,10 @@ namespace Figures
 				clock.Restart();
 				foreach (var b in bodies)
 				{
+                    if (b == null)
+                        continue;
 					if (b.Momentum.LengthSquared == 0)
-					{
 						continue;
-					}
 
 					var t = b.Clock.ElapsedMilliseconds / 1000.0;
 					var velocityD = b.Accelerate * (t * t * 0.5);
@@ -307,14 +307,16 @@ namespace Figures
 					b.Y += b.Velocity.Y / (fpssum / fpsdeque.Count);
 				}
 				foreach (var b in bodies)
-				{
+                {
+                    if (b == null)
+                        continue;
 					if (b.Momentum.LengthSquared == 0)
-					{
 						continue;
-					}
 					//Столкновение
 					foreach (var body in bodies)
-					{
+                    {
+                        if (body == null)
+                            continue;
 						if (body != b)// && b.Momentum.LengthSquared > 0)
 						{
 							//var m = Math.Sqrt((X - body.X) * (X - body.X) + (Y - body.Y) * (Y - body.Y));
@@ -352,11 +354,11 @@ namespace Figures
 				Action action = () =>
 				{
 					foreach (var b in bodies)
-					{
+                    {
+                        if (b == null)
+                            continue;
 						if (b.Momentum.LengthSquared == 0)
-						{
-							continue;
-						}
+                            continue;
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
 						//fpsCount.Text = FPS.ToString();
 						fpsCount.Text = ((int)(fpssum / fpsdeque.Count)).ToString();
@@ -384,12 +386,12 @@ namespace Figures
 				catch
 				{
 					FPS = 1000.0;
-					fpsdeque.Enqueue(FPS);
-					fpssum += FPS;
-					if (fpsdeque.Count > fpscountcapacity)
-					{
-						fpssum -= fpsdeque.Dequeue();
-					}
+					//fpsdeque.Enqueue(FPS);
+					//fpssum += FPS;
+					//if (fpsdeque.Count > fpscountcapacity)
+					//{
+					//	fpssum -= fpsdeque.Dequeue();
+					//}
 				}
 			}
 		}
