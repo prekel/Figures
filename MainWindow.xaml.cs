@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace Figures
 {
@@ -20,97 +23,64 @@ namespace Figures
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+        int n = 0;
+		Body[] bodies = new Body[500];
+        bool F;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			
+            MouseUp += MainWindow_MouseUp;
 
-			var bodies = new Body[10];
-			var disp = Dispatcher;
+			//var r = (1280 / 325.0) * 25 / 2;
+			var r = 50;
+			var m = 10 / 1000.0;
+			var mu = 0.1;
+			var ck = 40;
+            var M = 40;
 
-			//			bodies[0] = new Body(330, 170, 70, 100, 0.1, 0.001, 20, ref bodies, ref disp);
-			//			Grid.Children.Add(bodies[0].Figure);
-			//
-			//			bodies[1] = new Body(330, 370, 70, 100, 0.1, 0.001, 50, ref bodies, ref disp);
-			//			Grid.Children.Add(bodies[1].Figure);
-			//
-			//			bodies[2] = new Body(600, 500, 100, 100, 0.5, 0.002, 10, ref bodies, ref disp);
-			//			Grid.Children.Add(bodies[2].Figure);
-			//
-			//			bodies[3] = new Body(900, 500, (25.0 / 2) * (1280 / 325.0), 100, 6.45 / 1000, 0.005, 30, ref bodies, ref disp);
-			//			Grid.Children.Add(bodies[3].Figure);
-			//
-			//			bodies[4] = new Body(1000, 400, 50, 100, 6.45 / 1000, 0.01, 30, ref bodies, ref disp);
-			//			Grid.Children.Add(bodies[4].Figure);
+			for (var i = 0; i < M / 2; i++)
+			{
+				bodies[i] = new Body(150 + i * 105, 150, r, m, mu, ck, Brushes.AliceBlue, Brushes.DarkOliveGreen);
+				Grid.Children.Add(bodies[i].Figure);
+                n++;
+			}
 
-			//			bodies[0] = new Body(200, 300, 100, 100, 1, 0.01, 30, ref bodies, Brushes.Blue, Brushes.DarkOliveGreen, ref disp);
-			//			Grid.Children.Add(bodies[0].Figure);
-			//
-			//			bodies[1] = new Body(500, 300, 100, 100, 1, 0.01, 30, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			//			Grid.Children.Add(bodies[1].Figure);
-			//
-			//			bodies[2] = new Body(800, 300, 100, 100, 1, 0.01, 30, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			//			Grid.Children.Add(bodies[2].Figure);
-			//
-			//			bodies[3] = new Body(800, 600, 100, 100, 1, 0.01, 30, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			//			Grid.Children.Add(bodies[3].Figure);
-			//
-			//			bodies[4] = new Body(500, 600, 100, 100, 1, 0.01, 30, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			//			Grid.Children.Add(bodies[4].Figure);
+			for (var i = M / 2; i < M; i++)
+			{
+				bodies[i] = new Body(150 + (i - M / 2) * 105, 650, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
+				Grid.Children.Add(bodies[i].Figure);
+                n++;
+			}
 
-			bodies[0] = new Body(200, 300, 40, 60, 1, 0.01, 100, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[0].Figure);
+			var fps = 100;
 
-			bodies[1] = new Body(300, 300, 40, 60, 1, 0.01, 100, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[1].Figure);
-
-			bodies[2] = new Body(400, 300, 40, 60, 1, 0.01, 100, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[2].Figure);
-
-			bodies[3] = new Body(500, 300, 40, 60, 1, 0.01, 100, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[3].Figure);
-
-			bodies[4] = new Body(600, 300, 40, 60, 1, 0.01, 100, ref bodies, Brushes.AliceBlue, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[4].Figure);
-
-
-			bodies[5] = new Body(200, 700, 40, 60, 1, 0.01, 100, ref bodies, Brushes.Tomato, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[5].Figure);
-
-			bodies[6] = new Body(300, 700, 40, 60, 1, 0.01, 100, ref bodies, Brushes.Tomato, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[6].Figure);
-
-			bodies[7] = new Body(400, 700, 40, 60, 1, 0.01, 100, ref bodies, Brushes.Tomato, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[7].Figure);
-
-			bodies[8] = new Body(500, 700, 40, 60, 1, 0.01, 100, ref bodies, Brushes.Tomato, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[8].Figure);
-
-			bodies[9] = new Body(700, 700, 40, 60, 1, 0.01, 100, ref bodies, Brushes.Tomato, Brushes.DarkOliveGreen, ref disp);
-			Grid.Children.Add(bodies[9].Figure);
+			var cycle = new Thread(new ParameterizedThreadStart(Body.Move));
+			cycle.Start(new object[] { bodies, Dispatcher, fpsCount, fps } );
 
 		}
 
-		//public void MoveEllipse(Ellipse el, Thickness margin)
-		//{
-		//	Action action = () =>
-		//	{
-		//		el.Margin = margin;
-		//	};
-		//	Invoke(action);
-		//}
+        void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (F)
+            {
+                bodies[n] = new Body(e.GetPosition(Grid).X, ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
+                Grid.Children.Add(bodies[n].Figure);
+                n++;
+            }
+        }
 
-		//public int Ret1()
-		//{
-		//	return 1;
-		//}
+		public Vector Norm(Vector a)
+		{
+			var b = a;
+			b.Normalize();
+			return b;
+		}
 
-		//private void Mouse_Move(object sender, MouseEventArgs e)
-		//{
-		//	var xy = Mouse.GetPosition(grid);
-		//	var b = Ellipse1.Margin;
-		//	b.Top = xy.Y - 50;
-		//	b.Left = xy.X - 50;
-		//	Ellipse1.Margin = b;
-		//}
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            F = (F)?false:true;
+        }
 	}
 }
