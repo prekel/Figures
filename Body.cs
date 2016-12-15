@@ -214,6 +214,13 @@ namespace Figures
 				}
 
 				draw:;
+				// Приостановка потока на половину отведенного времени для кадра
+				if (clock.ElapsedMilliseconds < mspflimit / 2)
+				{
+					try { System.Threading.Thread.Sleep(mspflimit / 2 - (int)clock.ElapsedMilliseconds); }
+					catch { /*ignored*/ };
+				}
+
 				// Проверка на движение и рисование в основном потоке
 				Action action = () =>
 				{
