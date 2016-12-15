@@ -342,6 +342,7 @@ namespace Figures
 
 								b.StartMoveByMomentum1(b.Momentum);
 								body.StartMoveByMomentum1(body.Momentum);
+								
 								//break;
 								goto jkl;
 							}
