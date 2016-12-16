@@ -47,13 +47,13 @@ namespace Figures
 			Clock.Start();
 		}
 
-		public void SleepHalf()
+		public void SleepPart(double k)
 		{
 			ActualSumTime = (int)Clock.ElapsedMilliseconds;
 			ActualTime = ActualSumTime - PreviousSumTime;
-			if (ActualTime < TimeLimit / 5 * 4)
+			if (ActualTime < TimeLimit * k)
 			{
-				try { Thread.Sleep(TimeLimit / 5 * 4 - ActualTime); }
+				try { Thread.Sleep((int)(TimeLimit * k) - ActualTime); }
 				catch { /*ignored*/ };
 			}
 		}

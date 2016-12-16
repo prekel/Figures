@@ -55,7 +55,7 @@ namespace Figures
 			}
 
 			var fps = 100;
-			var cap = 50;
+			var cap = 20;
 
 			var loop = new Thread(new ParameterizedThreadStart(Body.Move));
 			loop.Start(new object[] { bodies, Dispatcher, fpsCount, fps, cap } );
