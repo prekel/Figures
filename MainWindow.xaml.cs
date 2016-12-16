@@ -55,9 +55,10 @@ namespace Figures
 			}
 
 			var fps = 100;
+			var cap = 20;
 
-			var cycle = new Thread(new ParameterizedThreadStart(Body.Move));
-			cycle.Start(new object[] { bodies, Dispatcher, fpsCount, fps } );
+			var loop = new Thread(new ParameterizedThreadStart(Body.Move));
+			loop.Start(new object[] { bodies, Dispatcher, fpsCount, fps, cap } );
 
 		}
 
@@ -71,7 +72,7 @@ namespace Figures
             }
         }
 
-		public Vector Norm(Vector a)
+		public static Vector Norm(Vector a)
 		{
 			var b = a;
 			b.Normalize();

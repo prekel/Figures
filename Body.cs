@@ -29,7 +29,7 @@ namespace Figures
 		private const double FK = 10e5;
 
 		private Vector _f, _a, _v, _p, _v0;
-		private double _x, _y, _r, _m, _t, _μ, _fr, _kv;
+		private double _x, _y, _r, _m, _μ, _fr, _kv;
 
 		/// <summary> Масcа </summary>
 		public double Mass { get { return _m; } set { _m = value; } }
@@ -129,22 +129,18 @@ namespace Figures
 			var obj = Param as object[];
 			var clock = new Stopwatch();
 			var bodies = obj[0] as Body[];
-			double FPS = 0;
 			var disp = obj[1] as Dispatcher;
 			var fpsCount = obj[2] as TextBlock;
-			var mspflimit = 1000 / ((int)obj[3]);
-			int fpscountcapacity = 20;
-			var fpsdeque = new Queue<double>(fpscountcapacity);
-			var fpssum = 0.0;
+
+			var FPS = new FpsControl((int)obj[3], (int)obj[4]);
+
 			while (true)
 			{
-				clock.Restart();
-
 				//Проверка на движение и движение
 				foreach (var b in bodies)
 				{
 					if (b == null)
-						continue;
+						break;
 					if (b.Momentum.LengthSquared == 0)
 						continue;
 
@@ -163,21 +159,21 @@ namespace Figures
 					b.Velocity = b.Velocity0 + velocityD;
 					b.Momentum = b.Velocity * b.Mass;
 
-					b.X += b.Velocity.X / (fpssum / fpsdeque.Count);
-					b.Y += b.Velocity.Y / (fpssum / fpsdeque.Count);
+					b.X += b.Velocity.X * FPS.ActualTime / 1000;
+					b.Y += b.Velocity.Y * FPS.ActualTime / 1000;
 				}
 
 				//Проверка на столкновение и столкновение
 				foreach (var b in bodies)
 				{
 					if (b == null)
-						continue;
+						break;
 					if (b.Momentum.LengthSquared == 0)
 						continue;
 					foreach (var body in bodies)
 					{
 						if (body == null)
-							continue;
+							break;
 						if (body == b)
 							continue;
 
@@ -209,17 +205,13 @@ namespace Figures
 							//break;
 							goto draw;
 						}
-
 					}
 				}
 
 				draw:;
-				// Приостановка потока на половину отведенного времени для кадра
-				if (clock.ElapsedMilliseconds < mspflimit / 2)
-				{
-					try { System.Threading.Thread.Sleep(mspflimit / 2 - (int)clock.ElapsedMilliseconds); }
-					catch { /*ignored*/ };
-				}
+
+				// Приостановка потока на часть отведенного времени для кадра
+				FPS.SleepPart(0.7);
 
 				// Проверка на движение и рисование в основном потоке
 				Action action = () =>
@@ -227,39 +219,20 @@ namespace Figures
 					foreach (var b in bodies)
 					{
 						if (b == null)
-							continue;
+							break;
 						if (b.Momentum.LengthSquared == 0)
 							continue;
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
 						//fpsCount.Text = FPS.ToString();
-						fpsCount.Text = ((int)(fpssum / fpsdeque.Count)).ToString();
+						fpsCount.Text = ((int)FPS.FrameAverage).ToString();
 					}
 				};
 				try { disp.Invoke(action); }
 				catch { return; }
 
 				// Приостановка потока для лимита фпс 
-				if (clock.ElapsedMilliseconds < mspflimit)
-				{
-					try { System.Threading.Thread.Sleep(mspflimit - (int)clock.ElapsedMilliseconds); }
-					catch { /*ignored*/ };
-				}
-
 				// Вычисление фпс
-				try
-				{
-					FPS = 1000.0 / clock.ElapsedMilliseconds;
-					fpsdeque.Enqueue(FPS);
-					fpssum += FPS;
-					if (fpsdeque.Count > fpscountcapacity)
-					{
-						fpssum -= fpsdeque.Dequeue();
-					}
-				}
-				catch
-				{
-					FPS = 0;
-				}
+				FPS.Calc();
 			}
 		}
 	}
