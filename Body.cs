@@ -129,17 +129,18 @@ namespace Figures
 			var obj = Param as object[];
 			var clock = new Stopwatch();
 			var bodies = obj[0] as Body[];
-			double FPS = 0;
 			var disp = obj[1] as Dispatcher;
 			var fpsCount = obj[2] as TextBlock;
+
+			var FPS = new FpsControl((int)obj[3], (int)obj[4]);
+
 			var mspflimit = 1000 / ((int)obj[3]);
+			double FPS = 0;
 			int fpscountcapacity = 20;
 			var fpsdeque = new Queue<double>(fpscountcapacity);
 			var fpssum = 0.0;
 			while (true)
 			{
-				clock.Restart();
-
 				//Проверка на движение и движение
 				foreach (var b in bodies)
 				{
@@ -163,8 +164,8 @@ namespace Figures
 					b.Velocity = b.Velocity0 + velocityD;
 					b.Momentum = b.Velocity * b.Mass;
 
-					b.X += b.Velocity.X / (fpssum / fpsdeque.Count);
-					b.Y += b.Velocity.Y / (fpssum / fpsdeque.Count);
+					b.X += b.Velocity.X / FPS.FpsAverage;
+					b.Y += b.Velocity.Y / FPS.FpsAverage;
 				}
 
 				//Проверка на столкновение и столкновение
@@ -214,12 +215,9 @@ namespace Figures
 				}
 
 				draw:;
+
 				// Приостановка потока на половину отведенного времени для кадра
-				if (clock.ElapsedMilliseconds < mspflimit / 2)
-				{
-					try { System.Threading.Thread.Sleep(mspflimit / 2 - (int)clock.ElapsedMilliseconds); }
-					catch { /*ignored*/ };
-				}
+				FPS.SleepHalf();
 
 				// Проверка на движение и рисование в основном потоке
 				Action action = () =>
@@ -232,34 +230,15 @@ namespace Figures
 							continue;
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
 						//fpsCount.Text = FPS.ToString();
-						fpsCount.Text = ((int)(fpssum / fpsdeque.Count)).ToString();
+						fpsCount.Text = ((int)FPS.FpsAverage).ToString();
 					}
 				};
 				try { disp.Invoke(action); }
 				catch { return; }
 
 				// Приостановка потока для лимита фпс 
-				if (clock.ElapsedMilliseconds < mspflimit)
-				{
-					try { System.Threading.Thread.Sleep(mspflimit - (int)clock.ElapsedMilliseconds); }
-					catch { /*ignored*/ };
-				}
-
 				// Вычисление фпс
-				try
-				{
-					FPS = 1000.0 / clock.ElapsedMilliseconds;
-					fpsdeque.Enqueue(FPS);
-					fpssum += FPS;
-					if (fpsdeque.Count > fpscountcapacity)
-					{
-						fpssum -= fpsdeque.Dequeue();
-					}
-				}
-				catch
-				{
-					FPS = 0;
-				}
+				FPS.Calc();
 			}
 		}
 	}
