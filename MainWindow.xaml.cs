@@ -38,7 +38,7 @@ namespace Figures
 			var m = 10 / 1000.0;
 			var mu = 0.1;
 			var ck = 40;
-            var M = 40;
+            var M = 16;
 
 			for (var i = 0; i < M / 2; i++)
 			{
@@ -49,7 +49,7 @@ namespace Figures
 
 			for (var i = M / 2; i < M; i++)
 			{
-				bodies[i] = new Body(150 + (i - M / 2) * 105, 650, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
+				bodies[i] = new Body(150 + (i - M / 2) * 105, 600, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
                 n++;
 			}
@@ -66,7 +66,7 @@ namespace Figures
         {
             if (F)
             {
-                bodies[n] = new Body(e.GetPosition(Grid).X, ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
+                bodies[n] = new Body(e.GetPosition(Grid).X, Grid.ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
                 Grid.Children.Add(bodies[n].Figure);
                 n++;
             }
