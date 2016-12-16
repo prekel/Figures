@@ -29,7 +29,7 @@ namespace Figures
 		private const double FK = 10e5;
 
 		private Vector _f, _a, _v, _p, _v0;
-		private double _x, _y, _r, _m, _t, _μ, _fr, _kv;
+		private double _x, _y, _r, _m, _μ, _fr, _kv;
 
 		/// <summary> Масcа </summary>
 		public double Mass { get { return _m; } set { _m = value; } }
@@ -159,8 +159,8 @@ namespace Figures
 					b.Velocity = b.Velocity0 + velocityD;
 					b.Momentum = b.Velocity * b.Mass;
 
-					b.X += b.Velocity.X / FPS.Fps;
-					b.Y += b.Velocity.Y / FPS.Fps;
+					b.X += b.Velocity.X * FPS.ActualTime / 1000;
+					b.Y += b.Velocity.Y * FPS.ActualTime / 1000;
 				}
 
 				//Проверка на столкновение и столкновение
@@ -225,7 +225,7 @@ namespace Figures
 							continue;
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
 						//fpsCount.Text = FPS.ToString();
-						fpsCount.Text = ((int)FPS.FpsAverage).ToString();
+						fpsCount.Text = ((int)FPS.FrameAverage).ToString();
 					}
 				};
 				try { disp.Invoke(action); }

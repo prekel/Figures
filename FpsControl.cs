@@ -10,73 +10,81 @@ namespace Figures
 {
 	public class FpsControl
 	{
-		private int _limit, _time, _atime, _ptime, _asum, _psum, _fps, _fpssum, _c;
-		private double _aver;
+		private int _limit, _time, _atime, _ptime, _asum, _psum, _fps, _fpssum, _c, _tsum;
+		private double _aver, _taver;
 
 		public int FrameLimit { get { return _limit; } set { _limit = value; _time = 1000 / value; } }
 		public int TimeLimit { get { return _time; } set { _time = value; _limit = 1000 / value; } }
-		public int Actual { get { return _atime; } set { _atime = value; } }
-		public int Previous { get { return _ptime; } set { _ptime = value; } }
-		public int ActualSum { get { return _asum; } set { _asum = value; } }
-		public int PreviousSum { get { return _psum; } set { _psum = value; } }
-		public int Fps { get { return _fps; } set { _fps = value; } }
-		public int FpsSum { get { return _fpssum; } set { _fpssum = value; } }
+		public int ActualTime { get { return _atime; } set { _atime = value; } }
+		public int PreviousTime { get { return _ptime; } set { _ptime = value; } }
+		public int ActualSumTime { get { return _asum; } set { _asum = value; } }
+		public int PreviousSumTime { get { return _psum; } set { _psum = value; } }
+		public int Frames { get { return _fps; } set { _fps = value; } }
+		public int FrameSum { get { return _fpssum; } set { _fpssum = value; } }
 		public int Capacity { get { return _c; } set { _c = value; } }
-		public double FpsAverage { get { return _aver; } set { _aver = value; } }
-
-
+		public double FrameAverage { get { return _aver; } set { _aver = value; } }
+		public double TimeAverage { get { return _taver; } set { _taver = value; } }
+		public int TimeSum { get { return _tsum; } set { _tsum = value; } }
 
 		Stopwatch Clock = new Stopwatch();
-		Queue<int> FpsQueue = new Queue<int>();
+		Queue<int> TimeQueue = new Queue<int>();
+		Queue<int> FrameQueue = new Queue<int>();
 
 		public FpsControl(int limit, int capacity)
 		{
 			FrameLimit = limit;
 			for (var i = 0; i < capacity; i++)
 			{
-				FpsQueue.Enqueue(TimeLimit);
+				TimeQueue.Enqueue(TimeLimit);
+			}
+			for (var i = 0; i < capacity; i++)
+			{
+				FrameQueue.Enqueue(FrameLimit);
 			}
 			Capacity = capacity;
-			FpsSum = TimeLimit * Capacity;
+			FrameSum = FrameLimit * Capacity;
+			TimeSum = TimeLimit * Capacity;
 			Clock.Start();
 		}
 
 		public void SleepHalf()
 		{
-			ActualSum = (int)Clock.ElapsedMilliseconds;
-			Actual = ActualSum - PreviousSum;
-			if (Actual < TimeLimit / 5 * 4)
+			ActualSumTime = (int)Clock.ElapsedMilliseconds;
+			ActualTime = ActualSumTime - PreviousSumTime;
+			if (ActualTime < TimeLimit / 5 * 4)
 			{
-				try { Thread.Sleep(TimeLimit / 5 * 4 - Actual); }
+				try { Thread.Sleep(TimeLimit / 5 * 4 - ActualTime); }
 				catch { /*ignored*/ };
 			}
 		}
 
 		public void Calc()
 		{
-			ActualSum = (int)Clock.ElapsedMilliseconds;
-			Actual = ActualSum - PreviousSum;
-			if (Actual < TimeLimit)
+			ActualSumTime = (int)Clock.ElapsedMilliseconds;
+			ActualTime = ActualSumTime - PreviousSumTime;
+			if (ActualTime < TimeLimit)
 			{
-				Thread.Sleep(TimeLimit - Actual);
-				//try {  }
-				//catch { /*ignored*/ };
+				Thread.Sleep(TimeLimit - ActualTime);
 			}
 
-			ActualSum = (int)Clock.ElapsedMilliseconds;
-			Actual = ActualSum - PreviousSum;
-			if (Actual > 0)
-				Fps = 1000 / Actual;
+			ActualSumTime = (int)Clock.ElapsedMilliseconds;
+			ActualTime = ActualSumTime - PreviousSumTime;
+			if (ActualTime > 0)
+				Frames = 1000 / ActualTime;
 			else
-				Fps = 1000;
-			FpsQueue.Enqueue(Fps);
-			FpsSum += Fps;
-			FpsSum -= FpsQueue.Dequeue();
-			FpsAverage = FpsSum / Capacity;
+				Frames = FrameLimit;
 
-			PreviousSum = (int)Clock.ElapsedMilliseconds;
-			//Debug.WriteLine("");
-			//Debug.Write(Actual);
+			FrameQueue.Enqueue(Frames);
+			FrameSum += Frames;
+			FrameSum -= FrameQueue.Dequeue();
+			FrameAverage = FrameSum / Capacity;
+
+			TimeQueue.Enqueue(ActualTime);
+			TimeSum += ActualTime;
+			TimeSum -= TimeQueue.Dequeue();
+			TimeAverage = TimeSum / Capacity;
+
+			PreviousSumTime = (int)Clock.ElapsedMilliseconds;
 		}
 	}
 }
