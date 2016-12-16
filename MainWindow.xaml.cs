@@ -54,7 +54,7 @@ namespace Figures
                 n++;
 			}
 
-			var fps = 500;
+			var fps = 100;
 			var cap = 10;
 
 			var loop = new Thread(new ParameterizedThreadStart(Body.Move));

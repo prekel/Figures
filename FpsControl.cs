@@ -34,18 +34,20 @@ namespace Figures
 			FrameLimit = limit;
 			for (var i = 0; i < capacity; i++)
 			{
-				FpsQueue.Enqueue(limit);
+				FpsQueue.Enqueue(TimeLimit);
 			}
 			Capacity = capacity;
+			FpsSum = TimeLimit * Capacity;
 			Clock.Start();
 		}
 
 		public void SleepHalf()
 		{
-
-			if (Clock.ElapsedMilliseconds < FrameLimit / 2)
+			ActualSum = (int)Clock.ElapsedMilliseconds;
+			Actual = ActualSum - PreviousSum;
+			if (Actual < TimeLimit / 5 * 4)
 			{
-				try { Thread.Sleep(FrameLimit / 2 - (int)clock.ElapsedMilliseconds); }
+				try { Thread.Sleep(TimeLimit / 5 * 4 - Actual); }
 				catch { /*ignored*/ };
 			}
 		}
@@ -54,26 +56,27 @@ namespace Figures
 		{
 			ActualSum = (int)Clock.ElapsedMilliseconds;
 			Actual = ActualSum - PreviousSum;
-			PreviousSum = ActualSum;
 			if (Actual < TimeLimit)
 			{
-				try { Thread.Sleep(TimeLimit - Actual); }
-				catch { /*ignored*/ };
+				Thread.Sleep(TimeLimit - Actual);
+				//try {  }
+				//catch { /*ignored*/ };
 			}
 
-			Actual = (int)Clock.ElapsedMilliseconds;
-			try
-			{
+			ActualSum = (int)Clock.ElapsedMilliseconds;
+			Actual = ActualSum - PreviousSum;
+			if (Actual > 0)
 				Fps = 1000 / Actual;
-			}
-			catch
-			{
+			else
 				Fps = 1000;
-			}
 			FpsQueue.Enqueue(Fps);
 			FpsSum += Fps;
 			FpsSum -= FpsQueue.Dequeue();
-			FpsAverage = FpsSum / (double)Capacity;
+			FpsAverage = FpsSum / Capacity;
+
+			PreviousSum = (int)Clock.ElapsedMilliseconds;
+			//Debug.WriteLine("");
+			//Debug.Write(Actual);
 		}
 	}
 }

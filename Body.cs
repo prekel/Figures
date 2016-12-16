@@ -134,18 +134,13 @@ namespace Figures
 
 			var FPS = new FpsControl((int)obj[3], (int)obj[4]);
 
-			var mspflimit = 1000 / ((int)obj[3]);
-			double FPS = 0;
-			int fpscountcapacity = 20;
-			var fpsdeque = new Queue<double>(fpscountcapacity);
-			var fpssum = 0.0;
 			while (true)
 			{
 				//Проверка на движение и движение
 				foreach (var b in bodies)
 				{
 					if (b == null)
-						continue;
+						break;
 					if (b.Momentum.LengthSquared == 0)
 						continue;
 
@@ -164,21 +159,21 @@ namespace Figures
 					b.Velocity = b.Velocity0 + velocityD;
 					b.Momentum = b.Velocity * b.Mass;
 
-					b.X += b.Velocity.X / FPS.FpsAverage;
-					b.Y += b.Velocity.Y / FPS.FpsAverage;
+					b.X += b.Velocity.X / FPS.Fps;
+					b.Y += b.Velocity.Y / FPS.Fps;
 				}
 
 				//Проверка на столкновение и столкновение
 				foreach (var b in bodies)
 				{
 					if (b == null)
-						continue;
+						break;
 					if (b.Momentum.LengthSquared == 0)
 						continue;
 					foreach (var body in bodies)
 					{
 						if (body == null)
-							continue;
+							break;
 						if (body == b)
 							continue;
 
@@ -225,7 +220,7 @@ namespace Figures
 					foreach (var b in bodies)
 					{
 						if (b == null)
-							continue;
+							break;
 						if (b.Momentum.LengthSquared == 0)
 							continue;
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
