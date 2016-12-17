@@ -30,8 +30,10 @@ namespace Figures
 		public MainWindow()
 		{
 			InitializeComponent();
-			
-            MouseUp += MainWindow_MouseUp;
+
+			MouseUp += MainWindow_MouseUp;
+			AddButton.Click += AddButton_Click;
+			ConnectionButton.Click += ConnectionButton_Click;
 
 			//var r = (1280 / 325.0) * 25 / 2;
 			var r = 50;
@@ -62,14 +64,20 @@ namespace Figures
 
 		}
 
-        void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
+		public void ConnectionButton_Click(object sender, RoutedEventArgs e)
+		{
+			var foo = new ConnectionDialog();
+			foo.Show();
+		}
+
+		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (F)
             {
                 bodies[n] = new Body(e.GetPosition(Grid).X, Grid.ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
                 Grid.Children.Add(bodies[n].Figure);
                 n++;
-            }
+			}
         }
 
 		public static Vector Norm(Vector a)
@@ -79,7 +87,7 @@ namespace Figures
 			return b;
 		}
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             F = (F)?false:true;
         }

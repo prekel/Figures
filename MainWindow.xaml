@@ -4,64 +4,13 @@
 	mc:Ignorable="d"
 	Title="Figures"
 	Height="450"
-	Width="800">
+	Width="800"
+	MinHeight="300"
+	MinWidth="400">
 	<Grid
 		Name="Grid">
 		<TextBlock x:Name="fpsCount" Margin="0,0,10,0" TextWrapping="Wrap" Text="123" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="90" FontFamily="Consolas" FontSize="30" TextAlignment="Right"/>
-		<Button Content="Add" Margin="0,0,100,5" Click="Button_Click" Height="35" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
-		<!--<Rectangle 
-			Name="Rectangle1"
-			Fill="AliceBlue" 
-			HorizontalAlignment="Left" 
-			Height="100" 
-			Stroke="DarkOliveGreen" 
-			VerticalAlignment="Top" 
-			Width="100" 
-			Margin="175,175,0,0"/>
-		<Line 
-			Name="Line1"
-			Stroke="DarkOliveGreen" 
-			StrokeThickness="1" 
-			X1="275" 
-			Y1="175" 
-			X2="325" 
-			Y2="115" 
-			Margin="0,0,0,0"/>
-		<Line 
-			Name="Line2"
-			Stroke="DarkOliveGreen" 
-			StrokeThickness="1" 
-			X1="175" 
-			Y1="175" 
-			X2="225" 
-			Y2="115" 
-			Margin="0,0,0,0"/>
-		<Line 
-			Name="Line3"
-			Stroke="DarkOliveGreen" 
-			StrokeThickness="1" 
-			X1="275" 
-			Y1="275" 
-			X2="325" 
-			Y2="215" 
-			Margin="0,0,0,0"/>
-		<Line 
-			Name="Line4"
-			Stroke="DarkOliveGreen" 
-			StrokeThickness="1" 
-			X1="325" 
-			Y1="115" 
-			X2="325" 
-			Y2="215" 
-			Margin="0,0,0,0"/>
-		<Line 
-			Name="Line5"
-			Stroke="DarkOliveGreen" 
-			StrokeThickness="1" 
-			X1="225" 
-			Y1="115" 
-			X2="325" 
-			Y2="115" 
-			Margin="0,0,0,0"/>-->
+		<Button x:Name="AddButton" Content="Добавить" Margin="0,0,100,5" Height="35" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="67"/>
+		<Button x:Name="ConnectionButton" Content="Подключение" Margin="0,0,175,5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="90" Height="35"/>
 	</Grid>
 </Window>
