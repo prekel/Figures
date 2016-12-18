@@ -61,7 +61,7 @@ namespace Figures
 
 			var loop = new Thread(new ParameterizedThreadStart(Body.Move));
 			loop.Start(new object[] { bodies, Dispatcher, fpsCount, fps, cap } );
-
+			
 		}
 
 		public void ConnectionButton_Click(object sender, RoutedEventArgs e)

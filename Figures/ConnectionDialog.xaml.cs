@@ -22,7 +22,13 @@ namespace Figures
 		public ConnectionDialog()
 		{
 			InitializeComponent();
+			ConnectButton.Click += ConnectButton_Click;
+		}
 
+		private void ConnectButton_Click(object sender, RoutedEventArgs e)
+		{
+			Connection.Receiver(PortBox.Text);
+			System.Net.Sockets.
 		}
 	}
 }

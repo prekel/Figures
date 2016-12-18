@@ -17,7 +17,7 @@ namespace Figures
 			var s = a.X.ToString() + " " + a.Y.ToString();
 			Send(new string[] { s });
 		}
-		
+
 		public void Send(object Message)
 		{
 			try
@@ -47,23 +47,17 @@ namespace Figures
 			}
 		}
 
-		protected void Receiver(object Port)
+		public void Receiver(object Port)
 		{
 			var port = (int)Port;
-			var Listen = new TcpListener(port);
+			var Listen = new TcpListener(IPAddress.Any, port);
 			Listen.Start();
 			Socket ReceiveSocket;
-			//while (!_shouldReceiverStop[port])
 			while (true)
 			{
 				try
 				{
 					ReceiveSocket = Listen.AcceptSocket();
-					//if (_shouldReceiverStop[port])
-					//{
-					//	_shouldReceiverStop[port] = false;
-					//	return;
-					//}
 					var Receive = new Byte[256];
 					using (var MessageR = new MemoryStream())
 					{
@@ -72,11 +66,6 @@ namespace Figures
 						{
 							ReceivedBytes = ReceiveSocket.Receive(Receive, Receive.Length, 0);
 							MessageR.Write(Receive, 0, ReceivedBytes);
-							//if (_shouldReceiverStop[port])
-							//{
-							//	_shouldReceiverStop[port] = false;
-							//	return;
-							//}
 						} while (ReceiveSocket.Available > 0);
 						//Thread.Sleep(100);
 						//SendMsg(((IPEndPoint)ReceiveSocket.RemoteEndPoint).Address.ToString() + "→ " + Encoding.Default.GetString(MessageR.ToArray()), ChatBox);
@@ -87,7 +76,6 @@ namespace Figures
 					System.Diagnostics.Debug.WriteLine(ex.Message);
 				}
 			}
-			//_shouldReceiverStop[port] = false;
 		}
 	}
 }
