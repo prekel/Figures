@@ -25,7 +25,6 @@ namespace FiguresServer
 			var file = args[0];
 			var port = int.Parse(args[1]);
 			var serv = new Server(port);
-			//var serverthread = new Thread(new ParameterizedThreadStart(Receiver));
 		}
 
 		public Server(int port)
