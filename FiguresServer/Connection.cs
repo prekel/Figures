@@ -61,6 +61,7 @@ namespace FiguresServer
 		{
 			var port = (int)Port;
 			var listen = new TcpListener(IPAddress.Any, port);
+			listen.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			listen.Start();
 			while (true)
 			{

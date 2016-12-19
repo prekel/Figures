@@ -15,7 +15,7 @@ namespace FiguresServer
 {
 	public class Server
 	{
-		private Dictionary<IPAddress, Player> players;
+		private Dictionary<IPAddress, Player> players = new Dictionary<IPAddress, Player>();
 		private int _port;
 		public int Port { get { return _port; } set { _port = value; } }
 		Connection Connect;
