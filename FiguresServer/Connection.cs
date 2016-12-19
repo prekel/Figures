@@ -28,9 +28,6 @@ namespace FiguresServer
 		public Connection(int port)
 		{
 			_port = port;
-			//var serverthread = new Thread(Receiver);
-			var serverthread = new Thread(GetStreams);
-			serverthread.Start(port);
 		}
 
 		//private void SendThread(object parameters)
@@ -55,7 +52,13 @@ namespace FiguresServer
 		//	client.Close();
 		//}
 
-		public void GetStreams(object Port)
+		public void GetStreams(int port)
+		{
+			var sendthread = new Thread(SendThread);
+			sendthread.Start(port);
+		}
+
+		public void GetStreamsThread(object Port)
 		{
 			var port = (int)Port;
 			TcpListener listener = new TcpListener(IPAddress.Any, port);
@@ -66,11 +69,12 @@ namespace FiguresServer
 				{
 					var client = listener.AcceptTcpClient();
 					var sr = new StreamReader(client.GetStream());
-					var sw = new StreamWriter(client.GetStream());
+					var sw = new StreamWriter(client.GetStream()); sw.AutoFlush = true;
 					var ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
 					NewClient(ip, sr, sw);
 					//SrDict[ip] = sr;
 					//SwDict[ip] = sw;
+					//client.Close();
 				}
 			}
 		}
@@ -78,7 +82,7 @@ namespace FiguresServer
 		public void Send(string msg, Player[] players)
 		{
 			var sendthread = new Thread(SendThread);
-			sendthread.Start(new object[] { msg, players } );
+			sendthread.Start(new object[] { msg, players });
 		}
 
 		public void SendThread(object parameters)
@@ -109,19 +113,19 @@ namespace FiguresServer
 		{
 			try
 			{
+				var param = (object[])parameters;
+				var players = (Player[])param[0];
 				while (true)
 				{
-					var param = (object[])parameters;
-					var players = (Player[])param[0];
 					foreach (var player in players)
 					{
 						if (player == null)
 							continue;
-						if (player.Reader.EndOfStream)
-							continue;
 						var s = player.Reader.ReadLine();
-						Console.WriteLine(s);
-						Debug.WriteLine(s);
+						if (s == null)
+							continue;
+						//Console.WriteLine(s);
+						//Debug.WriteLine(s);
 						NewMessage(player, s);
 					}
 				}

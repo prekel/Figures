@@ -30,6 +30,13 @@ namespace FiguresServer
 
 		}
 
+		public Player(int port)
+		{
+			var Port = port;
+			var Connect = new Connection(Port);
+			Connect.Send("12312311111", new Player[] { new Player() { Writer = new StreamWriter(new NetworkStream(new Socket((new IPEndPoint(IPAddress.Parse("192.168.1.4"), port)).AddressFamily, SocketType.Stream, ProtocolType.Tcp))) } });
+		}
+
 		public override string ToString()
 		{
 			return Ip.ToString();
