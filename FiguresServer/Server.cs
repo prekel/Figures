@@ -15,10 +15,15 @@ namespace FiguresServer
 {
 	public class Server
 	{
-		private Dictionary<IPAddress, Player> players = new Dictionary<IPAddress, Player>();
-		private int _port;
+		//private Dictionary<IPAddress, Player> players = new Dictionary<IPAddress, Player>();
+		private int _port, n = 0;
 		public int Port { get { return _port; } set { _port = value; } }
 		Connection Connect;
+
+		public Player[] players = new Player[10];
+
+		//public Dictionary<IPAddress, StreamReader> SrDict = new Dictionary<IPAddress, StreamReader>();
+		//public Dictionary<IPAddress, StreamWriter> SwDict = new Dictionary<IPAddress, StreamWriter>();
 
 		public static void Main(string[] args)
 		{
@@ -31,46 +36,59 @@ namespace FiguresServer
 		{
 			Port = port;
 			Connect = new Connection(Port);
-			Connect.RequestCame += ServerRequestHandler;
+			Connect.NewClient += Connect_NewClient;
+			//Connect.NewMessage += ServerRequestHandler;
+			Connect.Receive(players);
 		}
 
-		public void ServerRequestHandler(IPAddress ip, string req)
+		private void Connect_NewClient(IPAddress ip, StreamReader sr, StreamWriter sw)
 		{
-			var request = req.Split();
-			try
-			{
-				var ipstosend = new List<IPAddress>();
-				foreach (var player in players)
-				{
-					if (Equals(player.Value.Ip, ip))
-						continue;
-					ipstosend.Add(player.Value.Ip);
-				}
-				var ips = ipstosend.ToArray();
-				switch (request[0])
-				{
-					case "$connect":
-						players[ip] = new Player(ip);
-						Connect.Send("$newplayer" + " " + ip.ToString(), ips, Port);
-						break;
-					case "$disconnect":
-						players[ip] = null;
-						Connect.Send("$deleteplayer" + " " + ip.ToString(), ips, Port);
-						break;
-					case "$momentumchange":
-						Connect.Send("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3], ips, Port);
-						break;
-					case "$add":
-						Connect.Send("$add" + " " + request[1] + " " + request[2], ips, Port);
-						break;
-					default:
-						throw new Exception("Неверный запрос");
-				}
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-			}
+			//SrDict[ip] = sr;
+			//SwDict[ip] = sw;
+			//players[ip].Reader = sr;
+			//players[ip].Writer = sw;
+			players[n++] = new Player() { Ip = ip, Reader = sr, Writer = sw };
 		}
+
+		//public void ServerRequestHandler(Player player, string req)
+		//{
+		//	var request = req.Split();
+		//	try
+		//	{
+		//		var playerstosend = new List<StreamWriter>();
+		//		foreach (var player1 in players)
+		//		{
+		//			//if (Equals(player.Value.Ip, ip))
+		//			//	continue;
+		//			//if (Equals(player1.Value.Reader, player.Reader))
+		//			//	continue;
+		//			playerstosend.Add(player1.Value.Writer);
+		//		}
+		//		var clients = playerstosend.ToArray();
+		//		//switch (request[0])
+		//		//{
+		//		//	case "$connect":
+		//		//		players[ip] = new Player(ip);
+		//		//		Connect.Send("$newplayer" + " " + ip.ToString(), clients, Port);
+		//		//		break;
+		//		//	case "$disconnect":
+		//		//		players[ip] = null;
+		//		//		Connect.Send("$deleteplayer" + " " + ip.ToString(), clients, Port);
+		//		//		break;
+		//		//	case "$momentumchange":
+		//		//		Connect.Send("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3], clients, Port);
+		//		//		break;
+		//		//	case "$add":
+		//		//		Connect.Send("$add" + " " + request[1] + " " + request[2], clients, Port);
+		//		//		break;
+		//		//	default:
+		//		//		throw new Exception("Неверный запрос");
+		//		//}
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		System.Diagnostics.Debug.WriteLine(ex.Message);
+		//	}
+		//}
 	}
 }

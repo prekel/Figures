@@ -12,6 +12,9 @@ namespace FiguresServer
 		string _name, _comp;
 		public IPAddress Ip;
 
+		public StreamReader Reader;
+		public StreamWriter Writer;
+
 		public Player(string ip)
 		{
 			Ip = IPAddress.Parse(ip);
@@ -20,6 +23,16 @@ namespace FiguresServer
 		public Player(IPAddress ip)
 		{
 			Ip = ip;
+		}
+
+		public Player()
+		{
+
+		}
+
+		public override string ToString()
+		{
+			return Ip.ToString();
 		}
 	}
 }
