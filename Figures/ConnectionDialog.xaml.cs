@@ -27,8 +27,8 @@ namespace Figures
 
 		private void ConnectButton_Click(object sender, RoutedEventArgs e)
 		{
-			Connection.Receiver(PortBox.Text);
-			System.Net.Sockets.
+			//Connection.Receiver(PortBox.Text);
+			//System.Net.Sockets.
 		}
 	}
 }

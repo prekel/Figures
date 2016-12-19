@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.25914.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figures", "Figures\Figures.csproj", "{F4440701-C1B9-425C-B6DF-63189DAD1D43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiguresServer", "..\FiguresServer\FiguresServer.csproj", "{E37DD0B8-FFA6-424A-96AE-BEA45BB21F07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiguresServer", "FiguresServer\FiguresServer.csproj", "{E37DD0B8-FFA6-424A-96AE-BEA45BB21F07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

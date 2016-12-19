@@ -40,7 +40,7 @@
 			Height="23" 
 			Grid.Row="1" 
 			TextWrapping="Wrap" 
-			VerticalAlignment="Top" TextChanged="PortBox_TextChanged"/>
+			VerticalAlignment="Top"/>
 		<TextBox 
 			x:Name="IPBox" 
 			Text="127.0.0.1" 
