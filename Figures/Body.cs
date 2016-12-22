@@ -31,6 +31,9 @@ namespace Figures
 		private Vector _f, _a, _v, _p, _v0;
 		private double _x, _y, _r, _m, _μ, _fr, _kv;
 
+		public delegate void StringContainer(string s);
+		public static event StringContainer NewLog;
+
 		/// <summary> Масcа </summary>
 		public double Mass { get { return _m; } set { _m = value; } }
 		/// <summary> Абцисса центра </summary>
@@ -201,6 +204,8 @@ namespace Figures
 
 							b.StartMoveByMomentum1(b.Momentum);
 							body.StartMoveByMomentum1(body.Momentum);
+
+							NewLog?.Invoke(b.Momentum.ToString() + "\n" + body.Momentum.ToString() + "\n");
 
 							//break;
 							goto draw;

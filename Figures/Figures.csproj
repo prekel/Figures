@@ -76,7 +76,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Body.cs" />
-    <Compile Include="Connection.cs" />
     <Compile Include="ConnectionDialog.xaml.cs">
       <DependentUpon>ConnectionDialog.xaml</DependentUpon>
     </Compile>
@@ -114,6 +113,12 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service Capabilities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FiguresServer\FiguresServer.csproj">
+      <Project>{e37dd0b8-ffa6-424a-96ae-bea45bb21f07}</Project>
+      <Name>FiguresServer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

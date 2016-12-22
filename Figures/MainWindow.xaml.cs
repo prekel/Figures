@@ -26,6 +26,7 @@ namespace Figures
         int n = 0;
 		Body[] bodies = new Body[500];
         bool F;
+		string log = "";
 
 		public MainWindow()
 		{
@@ -34,6 +35,7 @@ namespace Figures
 			MouseUp += MainWindow_MouseUp;
 			AddButton.Click += AddButton_Click;
 			ConnectionButton.Click += ConnectionButton_Click;
+			//Body.NewLog += NewLog;
 
 			//var r = (1280 / 325.0) * 25 / 2;
 			var r = 50;
@@ -66,8 +68,14 @@ namespace Figures
 
 		public void ConnectionButton_Click(object sender, RoutedEventArgs e)
 		{
-			var foo = new ConnectionDialog();
-			foo.Show();
+			var condial = new ConnectionDialog(log);
+			condial.Show();
+			condial.NewLog += NewLog;
+		}
+
+		private void NewLog(string s)
+		{
+			log += s;
 		}
 
 		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
