@@ -1,10 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.4
+# SharpDevelop 5.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figures(shdev)", "Figures\Figures(shdev).csproj", "{D62CB3AF-B49A-4BF5-979F-B24D24250425}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiguresServer(shdev)", "FiguresServer\FiguresServer(shdev).csproj", "{DAC8791A-A362-49BE-A0F4-CF240ED3603C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client(shdev)", "Client\Client(shdev).csproj", "{4A572CF1-E165-4F0D-B133-3EA5083BAB0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,5 +22,9 @@ Global
 		{DAC8791A-A362-49BE-A0F4-CF240ED3603C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAC8791A-A362-49BE-A0F4-CF240ED3603C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAC8791A-A362-49BE-A0F4-CF240ED3603C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A572CF1-E165-4F0D-B133-3EA5083BAB0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A572CF1-E165-4F0D-B133-3EA5083BAB0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A572CF1-E165-4F0D-B133-3EA5083BAB0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A572CF1-E165-4F0D-B133-3EA5083BAB0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

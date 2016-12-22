@@ -5,38 +5,53 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using FiguresServer;
 
 namespace Client
 {
-	class Program
+	public class Client
 	{
-		static void Main(string[] args)
+		public Connection Connect, rConnect;
+		
+		public static void Main(string[] args)
 		{
-			var ID = Console.ReadLine();
-			Console.WriteLine(String.Format("My ID-{0} \n----------------------------------------------", ID));
-			var ip = IPAddress.Parse("127.0.0.1");
-			var sock1 = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-			sock1.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ExclusiveAddressUse, 1);
-			var iep1 = new IPEndPoint(ip, 9060);
-			var flag = true;
-			//sock1.Connect(iep1);
-			do
+			var ip = IPAddress.Parse(args[0]);
+			var port = int.Parse(args[1]);
+			var rport = int.Parse(args[2]);
+			var client = new Client(ip, port, rport);
+		}
+		
+		public Client(IPAddress ip, int port, int rport)
+		{
+			Connect = new Connection(port);
+			try
+			{
+				Connect.Receive();
+				Connect.NewMessage += NewMsg;
+			}
+			catch (SocketException)
+			{
+				rConnect = new Connection(rport);
+				rConnect.Receive();
+				rConnect.NewMessage += NewMsg;
+			}
+			
+			while (true)
 			{
 				var str = Console.ReadLine();
-				if (String.IsNullOrEmpty(str))
-				{
+				if (string.IsNullOrEmpty(str))
 					continue;
-				}
 				if (str == "exit")
-				{
-					flag = false;
-				}
-				byte[] data1 = Encoding.Default.GetBytes(ID + ": " + str);
-				sock1.SendTo(data1, iep1);
-				//sock1.Send(data1);
-			} while (flag);
-			sock1.Close();
-			Console.ReadKey();
+					break;
+				Connect.Send(str, ip);
+			}
+		}
+
+		//public void NewMsg(EndPoint ep, string message)
+		public void NewMsg(IPAddress ip, string message)
+		{
+			//var ip = ((IPEndPoint) ep).Address;
+			Console.WriteLine(ip + " " + message);
 		}
 	}
 }

@@ -11,193 +11,97 @@ using System.Diagnostics;
 
 namespace FiguresServer
 {
-	class Connection
+	public class Connection
 	{
-		private int _port;
+		private int _port, _rport;
 		public int Port { get { return _port; } set { _port = value; } }
+		public int ReservePort { get { return _rport; } set { _rport = value; } }
+		private IPAddress _lip;
+		public IPAddress LocalIp { get { return _lip; } set { _lip = value; } }
 
-		public delegate void MessageContainer(Player player, string message);
+		private int portReceive;
+		private Socket socket;
+		private byte[] buffer;
+		private EndPoint endPoint;
+
+		//public delegate void MessageContainer(EndPoint ep, string message);
+		public delegate void MessageContainer(IPAddress ip, string message);
 		public event MessageContainer NewMessage;
 
-		public delegate void StreamContainer(IPAddress ip, StreamReader sr, StreamWriter sw);
-		public event StreamContainer NewClient;
-
-		//public Dictionary<IPAddress, StreamReader> SrDict = new Dictionary<IPAddress, StreamReader>();
-		//public Dictionary<IPAddress, StreamWriter> SwDict = new Dictionary<IPAddress, StreamWriter>();
-
-		public Connection(int port)
+		public Connection(int port, int rport)
 		{
-			_port = port;
-		}
-
-		//private void SendThread(object parameters)
-		//{
-		//	TcpClient client = new TcpClient();
-		//	try
-		//	{
-		//		var param = (object[])parameters;
-		//		var msg = (string)param[0];
-		//		var ips = param[1] as IPAddress[];
-		//		var port = (int)param[2];
-
-		//		client.Connect(ips[0], port);
-		//		StreamWriter sw = new StreamWriter(client.GetStream());
-		//		sw.AutoFlush = true;
-		//		sw.WriteLine(msg);
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		System.Diagnostics.Debug.WriteLine(ex.Message);
-		//	}
-		//	client.Close();
-		//}
-
-		public void GetStreams(int port)
-		{
-			var sendthread = new Thread(SendThread);
-			sendthread.Start(port);
-		}
-
-		public void GetStreamsThread(object Port)
-		{
-			var port = (int)Port;
-			TcpListener listener = new TcpListener(IPAddress.Any, port);
-			listener.Start();
-			while (true)
+			Port = port;
+			ReservePort = rport;
+			var hostips = Dns.GetHostEntry(Dns.GetHostEntry("localhost").HostName).AddressList;
+			foreach (var ip in hostips)
 			{
-				if (listener.Pending())
+				if (ip.ToString().Substring(0, 7) == "192.168")
 				{
-					var client = listener.AcceptTcpClient();
-					var sr = new StreamReader(client.GetStream());
-					var sw = new StreamWriter(client.GetStream()); sw.AutoFlush = true;
-					var ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
-					NewClient(ip, sr, sw);
-					//SrDict[ip] = sr;
-					//SwDict[ip] = sw;
-					//client.Close();
+					LocalIp = ip;
+					break;
 				}
 			}
 		}
 
-		public void Send(string msg, Player[] players)
+		public Connection(int port)//, int rport)
 		{
-			var sendthread = new Thread(SendThread);
-			sendthread.Start(new object[] { msg, players });
+			Port = port;
+			//ReservePort = rport;
+			//LocalIp = Dns.GetHostEntry(Dns.GetHostEntry("localhost").HostName).AddressList[1];
+		}
+
+		public void Receive()
+		{
+			socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+			buffer = new byte[1024];
+			portReceive = Port;
+			endPoint = new IPEndPoint(IPAddress.Any, portReceive);
+
+			socket.Bind(endPoint);
+			socket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref endPoint, ReceiveCallback, socket);
+		}
+
+		private void ReceiveCallback(IAsyncResult ar)
+		{
+			var n = socket.EndReceiveFrom(ar, ref endPoint);
+			var receivestring = Encoding.Default.GetString(buffer, 0, n);
+			NewMessage?.Invoke(((IPEndPoint)endPoint).Address, receivestring);
+
+			endPoint = new IPEndPoint(IPAddress.Any, portReceive);
+			socket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref endPoint, ReceiveCallback, socket);
+		}
+
+		public void Send(string message, IPAddress ip)
+		{
+			new Thread(SendThread).Start(new object[] { message, new IPAddress[] { ip } });
+		}
+
+		public void Send(string message, IPAddress[] ips)
+		{
+			new Thread(SendThread).Start(new object[] { message, ips });
 		}
 
 		public void SendThread(object parameters)
 		{
-			try
+			var param = (object[])parameters;
+			var message = (string)param[0];
+			var ips = (IPAddress[])param[1];
+
+			var sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+			//sock.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ExclusiveAddressUse, false);
+			foreach (var ip in ips)
 			{
-				var param = (object[])parameters;
-				var msg = (string)param[0];
-				var players = (Player[])param[1];
-				foreach (var player in players)
-				{
-					player.Writer.WriteLine(msg);
-				}
+				var data = Encoding.Default.GetBytes(message);
+				var iep = Equals(ip, LocalIp) ? new IPEndPoint(ip, ReservePort) : new IPEndPoint(ip, Port);
+				//var iep = new IPEndPoint(ip, Port);
+				sock.SendTo(data, iep);
 			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-			}
+			sock.Close();
 		}
 
-		public void Receive(Player[] players)
+		public override string ToString()
 		{
-			var receivethread = new Thread(ReceiveThread);
-			receivethread.Start(new object[] { players });
+			return Port.ToString() + ((ReservePort != 0) ? " " + ReservePort.ToString() : "");
 		}
-
-		public void ReceiveThread(object parameters)
-		{
-			try
-			{
-				var param = (object[])parameters;
-				var players = (Player[])param[0];
-				while (true)
-				{
-					foreach (var player in players)
-					{
-						if (player == null)
-							continue;
-						var s = player.Reader.ReadLine();
-						if (s == null)
-							continue;
-						//Console.WriteLine(s);
-						//Debug.WriteLine(s);
-						NewMessage(player, s);
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-			}
-		}
-
-		//public void Send(string msg, IPAddress[] ips, int port)
-		//{
-		//	var sendthread = new Thread(SendThread);
-		//	sendthread.Start(new object[] { msg, ips, port });
-		//}
-
-		//public void SendThread(object parameters)
-		//{
-		//	try
-		//	{
-		//		var param = (object[])parameters;
-		//		var msg = (string)param[0];
-		//		var ips = param[1] as IPAddress[];
-		//		var port = (int)param[2];
-
-		//		foreach (var ip in ips)
-		//		{
-		//			var endPoint = new IPEndPoint(ip, port);
-		//			var connector = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-		//			connector.Connect(endPoint);
-		//			var sendBytes = Encoding.Default.GetBytes(msg);
-		//			connector.Send(sendBytes);
-		//			connector.Close();
-		//		}
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		System.Diagnostics.Debug.WriteLine(ex.Message);
-		//	}
-		//}
-
-		//public void Receiver(object Port)
-		//{
-		//	var port = (int)Port;
-		//	var listen = new TcpListener(IPAddress.Any, port);
-		//	listen.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-		//	listen.Start();
-		//	while (true)
-		//	{
-		//		try
-		//		{
-		//			var receiveSocket = listen.AcceptSocket();
-		//			var receive = new byte[256];
-
-		//			var messageR = new MemoryStream();
-		//			do
-		//			{
-		//				var receivedBytes = receiveSocket.Receive(receive, receive.Length, 0);
-		//				messageR.Write(receive, 0, receivedBytes);
-		//			} while (receiveSocket.Available > 0);
-
-		//			var message = Encoding.Default.GetString(messageR.ToArray());
-		//			//var ip = ((IPEndPoint) receiveSocket.RemoteEndPoint).Address.ToString();
-		//			var ip = ((IPEndPoint)receiveSocket.RemoteEndPoint).Address;
-
-		//			RequestCame(ip, message);
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			System.Diagnostics.Debug.WriteLine(ex.Message);
-		//		}
-		//	}
-		//}
 	}
 }

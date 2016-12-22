@@ -48,5 +48,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FiguresServer\FiguresServer.csproj">
+      <Project>{E37DD0B8-FFA6-424A-96AE-BEA45BB21F07}</Project>
+      <Name>FiguresServer</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

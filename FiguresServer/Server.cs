@@ -14,91 +14,78 @@ namespace FiguresServer
 	public class Server
 	{
 		private Dictionary<IPAddress, int> PlayersSet = new Dictionary<IPAddress, int>();
-		private int _port, n = 0;
-		public int Port { get { return _port; } set { _port = value; } }
-		Connection Connect;
+		private int n = 0;
+		Connection Connect, rConnect;
 
 		public Player[] players = new Player[10];
 
-		//public Dictionary<IPAddress, StreamReader> SrDict = new Dictionary<IPAddress, StreamReader>();
-		//public Dictionary<IPAddress, StreamWriter> SwDict = new Dictionary<IPAddress, StreamWriter>();
-
 		public static void Main(string[] args)
 		{
-			var file = args[0];
-			var port = int.Parse(args[1]);
-			var s = Console.ReadLine();
-			if (s[0] == 'c')
+			var port = int.Parse(args[0]);
+			var rport = int.Parse(args[1]);
+
+			var serv = new Server(port, rport);
+			while (true)
 			{
-				var client = new Player(port);
-			}
-			else
-			{
-				var serv = new Server(port);
+
 			}
 		}
 
-		public Server(int port)
+		public Server(int port, int rport)
 		{
-			Port = port;
-			Connect = new Connection(Port);
-			Connect.GetStreams(port);
-			Connect.NewClient += Connect_NewClient;
-			Connect.NewMessage += ServerRequestHandler;
-			Connect.Receive(players);
+            Connect = new Connection(port, rport);
+            Connect.NewMessage += ServerRequestHandler;
+            Connect.Receive();
 		}
-
-		private void Connect_NewClient(IPAddress ip, StreamReader sr, StreamWriter sw)
+		
+		public void ServerRequestHandler(IPAddress ip, string message)
 		{
-			//SrDict[ip] = sr;
-			//SwDict[ip] = sw;
-			//players[ip].Reader = sr;
-			//players[ip].Writer = sw;
-			if (PlayersSet.ContainsKey(ip))
+			if (!PlayersSet.ContainsKey(ip))
 			{
-				players[PlayersSet[ip]].Reader = sr;//, Writer = sw };
-				return;
+				players[n] = new Player()
+				{
+					Ip = ip,
+					Number = n
+				};
+				PlayersSet[ip] = n;
+				n++;
 			}
-			PlayersSet[ip] = n;
-			players[n] = new Player() { Ip = ip, Reader = sr, Writer = sw };
-			n++;
-		}
+			Console.WriteLine(players[PlayersSet[ip]] + " " + message);
 
-		public void ServerRequestHandler(Player player, string message)
-		{
-			var request = message.Split();
+			var player = players[PlayersSet[ip]];
+
 			try
 			{
-				Console.WriteLine(player + " " + message);
-				//var playerstosend = new List<StreamWriter>();
-				//foreach (var player1 in players)
-				//{
-				//	//if (Equals(player.Value.Ip, ip))
-				//	//	continue;
-				//	//if (Equals(player1.Value.Reader, player.Reader))
-				//	//	continue;
-				//	playerstosend.Add(player1.Value.Writer);
-				//}
-				//var clients = playerstosend.ToArray();
-				//switch (request[0])
-				//{
-				//	case "$connect":
-				//		players[ip] = new Player(ip);
-				//		Connect.Send("$newplayer" + " " + ip.ToString(), clients, Port);
-				//		break;
-				//	case "$disconnect":
-				//		players[ip] = null;
-				//		Connect.Send("$deleteplayer" + " " + ip.ToString(), clients, Port);
-				//		break;
-				//	case "$momentumchange":
-				//		Connect.Send("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3], clients, Port);
-				//		break;
-				//	case "$add":
-				//		Connect.Send("$add" + " " + request[1] + " " + request[2], clients, Port);
-				//		break;
-				//	default:
-				//		throw new Exception("Неверный запрос");
-				//}
+				var request = message.Split();
+
+				var clients = (from p in players where !Equals(player.Ip, ip) select p.Ip).ToArray();
+
+				switch (request[0])
+				{
+					case "$connect":
+						//players[ip] = new Player(ip);
+						//Connect.Send("$newplayer" + " " + ip.ToString(), clients);
+						Connect.Send("$acceptconnect", ip);
+						break;
+					case "$disconnect":
+						players[PlayersSet[ip]] = null;
+						PlayersSet[ip] = -1;
+						//Connect.Send("$deleteplayer" + " " + ip.ToString(), clients);
+						break;
+					case "$momentumchange":
+						Connect.Send("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3], clients);
+						break;
+					case "$add":
+						Connect.Send("$add" + " " + request[1] + " " + request[2], clients);
+						break;
+					case "$send":
+						Connect.Send(ip.ToString() + " " + message, clients);
+						break;
+					default:
+						Connect.Send(ip.ToString() + " " + message, clients);
+						break;
+					//throw new Exception("Неверный запрос");
+				}
 			}
 			catch (Exception ex)
 			{

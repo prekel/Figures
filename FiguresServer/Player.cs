@@ -9,37 +9,33 @@ namespace FiguresServer
 	/// <summary> Description of Player. </summary>
 	public class Player
 	{
-		string _name, _comp;
+		private int _number;
+		private string _name = "", _comp;
 		public IPAddress Ip;
 
-		public StreamReader Reader;
-		public StreamWriter Writer;
+        public int Number { get { return _number; } set { _number = value; } }
+        public string Name { get { return _name; } set { _name = value; } }
+        public string CompName { get { return _comp; } set { _comp = value; } }
 
 		public Player(string ip)
 		{
 			Ip = IPAddress.Parse(ip);
 		}
 
-		public Player(IPAddress ip)
-		{
-			Ip = ip;
-		}
+		public Player(IPAddress ip, int number)
+        {
+         	Ip = ip;
+	        Number = number;
+        }
 
 		public Player()
 		{
 
 		}
 
-		public Player(int port)
-		{
-			var Port = port;
-			var Connect = new Connection(Port);
-			Connect.Send("12312311111", new Player[] { new Player() { Writer = new StreamWriter(new NetworkStream(new Socket((new IPEndPoint(IPAddress.Parse("192.168.1.4"), port)).AddressFamily, SocketType.Stream, ProtocolType.Tcp))) } });
-		}
-
 		public override string ToString()
 		{
-			return Ip.ToString();
+			return Ip.ToString() + Name;
 		}
 	}
 }

@@ -10,55 +10,42 @@ namespace Server
 {
 	public class Connection
 	{
-		private string host = "127.0.0.1";
-		private static int portReceive = 9060;
-		private int portSend = 9061;
-		private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-		private byte[] buffer = new byte[1024];
+		private static int portReceive;
+		private static Socket socket;
+		private static byte[] buffer;
 		
 		public delegate void MessageContainer(EndPoint ep, string message);
-		public event MessageContainer NewMessage;
+		public static event MessageContainer NewMessage;
 
-		private static IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, portReceive);
-		private EndPoint endPoint = (EndPoint)ipEndPoint;
+		private static EndPoint endPoint;
 
-		public void Start()
+		public static void Receive(int port)
 		{
+			socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+			portReceive = 7777;
+			buffer = new byte[1024];
+			endPoint = new IPEndPoint(IPAddress.Any, portReceive);
+
 			socket.Bind(endPoint);
 			socket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref endPoint, new AsyncCallback(ReceiveCallback), socket);
 		}
 
-		private void ReceiveCallback(IAsyncResult ar)
+		private static void ReceiveCallback(IAsyncResult ar)
 		{
 			var n = socket.EndReceiveFrom(ar, ref endPoint);
 			var receivestring = Encoding.Default.GetString(buffer, 0, n);
-			NewMessage(endPoint, receivestring);
+			if (NewMessage != null) NewMessage(endPoint, receivestring);
 			endPoint = new IPEndPoint(IPAddress.Any, portReceive);
 			socket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref endPoint, new AsyncCallback(ReceiveCallback), socket);
 		}
 		
-		public void Send(string message, IPAddress ip, int port)
+		public static void Send(string message, IPAddress ip, int port, string ID)
 		{
-			//var ip = IPAddress.Parse("127.0.0.1");
-
 			var sock1 = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 			sock1.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ExclusiveAddressUse, false);
-			var iep1 = new IPEndPoint(ip, 9060);
-			var flag = true;
-			do
-			{
-				var str = Console.ReadLine();
-				if (String.IsNullOrEmpty(str))
-				{
-					continue;
-				}
-				if (str == "exit")
-				{
-					flag = false;
-				}
-				byte[] data1 = Encoding.Default.GetBytes(ID + ": " + str);
-				sock1.SendTo(data1, iep1);
-			} while (flag);
+			var iep1 = new IPEndPoint(ip, port);
+			var data1 = Encoding.Default.GetBytes(ID + ": " + message);
+			sock1.SendTo(data1, iep1);
 			sock1.Close();
 		}
 	}
@@ -67,20 +54,53 @@ namespace Server
 
 	class Program
 	{
+		private static Dictionary<IPAddress, int> PlayersSet = new Dictionary<IPAddress, int>();
+		public static Player[] players = new Player[100];
+		public static int n = 0;
 		static void Main(string[] args)
 		{
-			var s = new Connection();
-			s.Start();
-			s.NewMessage += S_NewMessage;
+			var port = int.Parse(args[0]);
+
+			//var s = new Connection();
+			Connection.Receive(port);
+			Connection.NewMessage += S_NewMessage;
 
 			var ID = Console.ReadLine();
-			Console.WriteLine(String.Format("My ID-{0} \n----------------------------------------------", ID));
-			
+			Console.WriteLine(string.Format("My ID-{0} \n----------------------------------------------", ID));
+
+			var flag = true;
+			do
+			{
+				var str = Console.ReadLine();
+				if (string.IsNullOrEmpty(str))
+				{
+					continue;
+				}
+				if (str == "exit")
+				{
+					flag = false;
+				}
+				foreach (var player in players)
+				{
+					if (player == null)
+						continue;
+					Connection.Send(str, player.Ip, port, ID);
+				}
+			} while (flag);
+
 			Console.ReadKey();
 		}
 
 		private static void S_NewMessage(EndPoint ep, string message)
 		{
+			var ip = ((IPEndPoint) ep).Address;
+			if (!PlayersSet.ContainsKey(ip))
+			{
+				players[n] = new Player(ip);
+				players[n].number = n;
+				PlayersSet[ip] = n;
+				n++;
+			}
 			Console.WriteLine(ep + " " + message);
 		}
 	}
