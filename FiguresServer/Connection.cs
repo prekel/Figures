@@ -35,11 +35,9 @@ namespace FiguresServer
 			var hostips = Dns.GetHostEntry(Dns.GetHostEntry("localhost").HostName).AddressList;
 			foreach (var ip in hostips)
 			{
-				if (ip.ToString().Substring(0, 7) == "192.168")
-				{
-					LocalIp = ip;
-					break;
-				}
+				if (ip.ToString().Substring(0, 7) != "192.168") continue;
+				LocalIp = ip;
+				break;
 			}
 		}
 
@@ -79,6 +77,16 @@ namespace FiguresServer
 		public void Send(string message, IPAddress[] ips)
 		{
 			new Thread(SendThread).Start(new object[] { message, ips });
+		}
+
+		public void SendNoThread(string message, IPAddress ip)
+		{
+			SendThread(new object[] { message, new IPAddress[] { ip } });
+		}
+
+		public void SendNoThread(string message, IPAddress[] ips)
+		{
+			SendThread(new object[] { message, ips });
 		}
 
 		public void SendThread(object parameters)

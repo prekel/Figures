@@ -58,10 +58,10 @@ namespace Figures
 
 		private void ConnectButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (PortBox.Text.ToString().Split().Length == 2)
+			if (PortBox.Text.Split().Length == 2)
 			{
-				var port = int.Parse(PortBox.Text.ToString().Split()[0]);
-				var rport = int.Parse(PortBox.Text.ToString().Split()[1]);
+				var port = int.Parse(PortBox.Text.Split()[0]);
+				var rport = int.Parse(PortBox.Text.Split()[1]);
 				serv = new Connection(port);
 				try
 				{
@@ -77,7 +77,7 @@ namespace Figures
 			}
 			else
 			{
-				serv = new Connection(int.Parse(PortBox.Text.ToString()));
+				serv = new Connection(int.Parse(PortBox.Text));
 				serv.Receive();
 				serv.NewMessage += Serv_NewMessage;
 			}
@@ -92,11 +92,9 @@ namespace Figures
 			NewLog?.Invoke(ip.ToString() + " " + message + "\n");
 			Action action = () => { logBox.Text += ip.ToString() + " " + message + "\n"; };
 			Dispatcher.Invoke(action);
-			if (message == "$acceptconnect")
-			{
-				serv.NewMessage -= Serv_NewMessage;
-				AcceptConnect?.Invoke(serv);
-			}
+			if (message != "$acceptconnect") return;
+			serv.NewMessage -= Serv_NewMessage;
+			AcceptConnect?.Invoke(serv);
 		}
 
 		private void LogBox_TextChanged(object sender, EventArgs e)

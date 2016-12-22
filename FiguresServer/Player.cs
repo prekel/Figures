@@ -9,12 +9,12 @@ namespace FiguresServer
 	/// <summary> Description of Player. </summary>
 	public class Player
 	{
-		private int _number;
 		private string _name = "", _comp;
 		public IPAddress Ip;
 
-        public int Number { get { return _number; } set { _number = value; } }
-        public string Name { get { return _name; } set { _name = value; } }
+        public int Number { get; set; }
+
+		public string Name { get { return _name; } set { _name = value; } }
         public string CompName { get { return _comp; } set { _comp = value; } }
 
 		public Player(string ip)

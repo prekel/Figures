@@ -65,7 +65,7 @@ namespace FiguresServer
 					case "$connect":
 						//players[ip] = new Player(ip);
 						//Connect.Send("$newplayer" + " " + ip.ToString(), clients);
-						Connect.Send("$acceptconnect", ip);
+						Connect.SendNoThread("$acceptconnect", ip);
 						break;
 					case "$disconnect":
 						players[PlayersSet[ip]] = null;
@@ -73,16 +73,16 @@ namespace FiguresServer
 						//Connect.Send("$deleteplayer" + " " + ip.ToString(), clients);
 						break;
 					case "$momentumchange":
-						Connect.Send("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3], clients);
+						Connect.SendNoThread("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3], clients);
 						break;
 					case "$add":
-						Connect.Send("$add" + " " + request[1] + " " + request[2], clients);
+						Connect.SendNoThread("$add" + " " + request[1] + " " + request[2], clients);
 						break;
 					case "$send":
-						Connect.Send(ip.ToString() + " " + message, clients);
+						Connect.SendNoThread(ip.ToString() + " " + message, clients);
 						break;
 					default:
-						Connect.Send(ip.ToString() + " " + message, clients);
+						Connect.SendNoThread(ip.ToString() + " " + message, clients);
 						break;
 					//throw new Exception("Неверный запрос");
 				}

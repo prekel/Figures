@@ -61,7 +61,7 @@ namespace Figures
 			var fps = 100;
 			var cap = 20;
 
-			var loop = new Thread(new ParameterizedThreadStart(Body.Move));
+			var loop = new Thread(Body.Move);
 			loop.Start(new object[] { bodies, Dispatcher, fpsCount, fps, cap } );
 			
 		}
@@ -97,7 +97,7 @@ namespace Figures
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            F = (F)?false:true;
+	        F = !F;
         }
 	}
 }
