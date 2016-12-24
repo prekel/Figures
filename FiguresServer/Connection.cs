@@ -63,7 +63,7 @@ namespace FiguresServer
 		{
 			var n = socket.EndReceiveFrom(ar, ref endPoint);
 			var receivestring = Encoding.Default.GetString(buffer, 0, n);
-			NewMessage?.Invoke(((IPEndPoint)endPoint).Address, receivestring);
+			if (NewMessage != null) NewMessage(((IPEndPoint)endPoint).Address, receivestring);
 
 			endPoint = new IPEndPoint(IPAddress.Any, portReceive);
 			socket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref endPoint, ReceiveCallback, socket);

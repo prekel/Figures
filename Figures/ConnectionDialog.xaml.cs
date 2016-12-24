@@ -81,20 +81,20 @@ namespace Figures
 				serv.Receive();
 				serv.NewMessage += Serv_NewMessage;
 			}
-			var s = "$connect\n";
+			var s = "$connect";
 			serv.Send(s, IPAddress.Parse(IPBox.Text));
-			logBox.Text += s;
-			NewLog?.Invoke(s);
+			logBox.Text += s + '\n';
+			if (NewLog != null) NewLog(s);
 		}
 
 		private void Serv_NewMessage(IPAddress ip, string message)
 		{
-			NewLog?.Invoke(ip.ToString() + " " + message + "\n");
-			Action action = () => { logBox.Text += ip.ToString() + " " + message + "\n"; };
+			if (NewLog != null) NewLog(ip + " " + message + "\n");
+			Action action = () => { logBox.Text += ip + " " + message + "\n"; };
 			Dispatcher.Invoke(action);
 			if (message != "$acceptconnect") return;
 			serv.NewMessage -= Serv_NewMessage;
-			AcceptConnect?.Invoke(serv);
+			if (AcceptConnect != null) AcceptConnect(serv);
 		}
 
 		private void LogBox_TextChanged(object sender, EventArgs e)
