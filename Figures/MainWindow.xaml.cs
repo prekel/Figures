@@ -26,12 +26,16 @@ namespace Figures
         int n = 0;
 		Body[] bodies = new Body[500];
         bool F;
+		string log = "";
 
 		public MainWindow()
 		{
 			InitializeComponent();
-			
-            MouseUp += MainWindow_MouseUp;
+
+			MouseUp += MainWindow_MouseUp;
+			AddButton.Click += AddButton_Click;
+			ConnectionButton.Click += ConnectionButton_Click;
+			//Body.NewLog += NewLog;
 
 			//var r = (1280 / 325.0) * 25 / 2;
 			var r = 50;
@@ -57,19 +61,31 @@ namespace Figures
 			var fps = 100;
 			var cap = 20;
 
-			var loop = new Thread(new ParameterizedThreadStart(Body.Move));
+			var loop = new Thread(Body.Move);
 			loop.Start(new object[] { bodies, Dispatcher, fpsCount, fps, cap } );
-
+			
 		}
 
-        void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
+		public void ConnectionButton_Click(object sender, RoutedEventArgs e)
+		{
+			var condial = new ConnectionDialog(log);
+			condial.Show();
+			condial.NewLog += NewLog;
+		}
+
+		private void NewLog(string s)
+		{
+			log += s;
+		}
+
+		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (F)
             {
                 bodies[n] = new Body(e.GetPosition(Grid).X, Grid.ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
                 Grid.Children.Add(bodies[n].Figure);
                 n++;
-            }
+			}
         }
 
 		public static Vector Norm(Vector a)
@@ -79,9 +95,9 @@ namespace Figures
 			return b;
 		}
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            F = (F)?false:true;
+	        F = !F;
         }
 	}
 }

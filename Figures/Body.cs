@@ -26,10 +26,13 @@ namespace Figures
 		/// <summary> Ускорение свободного падения </summary>
 		public const double G = 9.80665;
 		/// <summary> Множитель для увелечения силы трения </summary>
-		private const double FK = 10e5;
+		private const double FK = 10000;
 
 		private Vector _f, _a, _v, _p, _v0;
 		private double _x, _y, _r, _m, _μ, _fr, _kv;
+
+		public delegate void StringContainer(string s);
+		public static event StringContainer NewLog;
 
 		/// <summary> Масcа </summary>
 		public double Mass { get { return _m; } set { _m = value; } }
@@ -114,7 +117,7 @@ namespace Figures
 			Velocity = Velocity0;
 			Accelerate = -Velocity;
 			_a.Normalize();
-			Accelerate *= Friction;
+			Accelerate *= Friction / Mass;
 		}
 
 		/// <summary> 
@@ -201,6 +204,8 @@ namespace Figures
 
 							b.StartMoveByMomentum1(b.Momentum);
 							body.StartMoveByMomentum1(body.Momentum);
+
+							NewLog?.Invoke(b.Momentum + "\n" + body.Momentum + "\n");
 
 							//break;
 							goto draw;
