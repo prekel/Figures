@@ -26,9 +26,9 @@ namespace Figures
 		/// <summary> Ускорение свободного падения </summary>
 		public const double G = 9.80665;
 		/// <summary> Множитель для увелечения силы трения </summary>
-		private const double FK = 10000;
+		private const double FK = 1000;
 
-		private Vector _f, _a, _v, _p, _v0;
+		private Vector _f, _a, _v, _p, _v0, _s0, _s;
 		private double _x, _y, _r, _m, _μ, _fr, _kv;
 
 		public delegate void StringContainer(string s);
@@ -61,6 +61,10 @@ namespace Figures
 		public Vector Momentum { get { return _p; } set { _p = value; } }
 		/// <summary> Вектор начальной скорости </summary>
 		public Vector Velocity0 { get { return _v0; } set { _v0 = value; } }
+		/// <summary> Вектор начального перемещения </summary>
+		public Vector Shift0 { get { return _s0; } set { _s0 = value; } }
+		/// <summary> Вектор перемещения </summary>
+		public Vector Shift { get { return _s; } set { _s = value; } }
 
 		/// <summary> Фигура </summary>
 		public Ellipse Figure;
@@ -92,16 +96,16 @@ namespace Figures
 			};
 			X = x; Y = y; Radius = r; Mass = m; Mu = mu; KV = speed; Number = n;
 			Friction = Mu * Mass * G * FK;
-			Figure.MouseUp += StartByClick2;
+			Figure.MouseUp += StartByClick;
 		}
 
 		/// <summary> Старт при нажатии </summary>
-		public void StartByClick2(object sender, MouseButtonEventArgs e)
+		public void StartByClick(object sender, MouseButtonEventArgs e)
 		{
 			var coords = e.GetPosition(Figure);
 			if (e.ChangedButton.ToString() == "Right")
 			{
-				StartMoveByMomentum1(new Vector(0, 0));
+				StartMoveByMomentum(new Vector(0, 0));
 			}
 			else
 			{
@@ -109,22 +113,27 @@ namespace Figures
 				coords.Y = -coords.Y + Radius;
 				Momentum = new Vector(-coords.X, -coords.Y) * KV * Mass;
 			}
-			StartMoveByMomentum1(Momentum);
+			StartMoveByMomentum(Momentum);
 
 			if (MomentumChange != null)
 				MomentumChange("$momentumchange " + Number + " " + X + " " + Y + " " + Momentum.X + " " + Momentum.Y);
 		}
 
-		/// <summary> Старт при столкновени </summary>
-		public void StartMoveByMomentum1(Vector momentum)
+		/// <summary> Старт при изменении импульса </summary>
+		public void StartMoveByMomentum(Vector momentum)
 		{
-			Clock.Restart();
 			Momentum = momentum;
+
+			Shift0 = new Vector(X, Y);
+
 			Velocity0 = Momentum / Mass;
 			Velocity = Velocity0;
+
 			Accelerate = -Velocity;
 			_a.Normalize();
 			Accelerate *= Friction / Mass;
+
+			Clock.Restart();
 		}
 
 		/// <summary> 
@@ -155,23 +164,31 @@ namespace Figures
 						continue;
 
 					var t = b.Clock.ElapsedMilliseconds / 1000.0;
-					var velocityD = b.Accelerate * (t * t * 0.5);
+					//var velocityD = b.Accelerate * (t * t * 0.5);
 					//var velocityD = b.Accelerate * t;
 
-					//Остановка при маленькой скорости
-					if (b.Velocity0.LengthSquared < velocityD.LengthSquared)
+					var ShiftD1 = b.Velocity0 * t;
+					var ShiftD2 = b.Accelerate * (t * t * 0.5);
+
+					b.Shift = b.Shift0 + ShiftD1 + ShiftD2;
+
+					b.X = b.Shift.X;
+					b.Y = b.Shift.Y;
+
+					if (ShiftD1.LengthSquared < (ShiftD2 * 2).LengthSquared)
 					{
-						b.Velocity = new Vector(0, 0);
-						b.Momentum = b.Velocity;
+						b.StartMoveByMomentum(new Vector(0, 0));
+						b.Clock.Stop();
 						continue;
 					}
 
 					b.Velocity = b.Momentum / b.Mass;
-					b.Velocity = b.Velocity0 + velocityD;
+					b.Velocity = b.Velocity0 + b.Accelerate * t;
 					b.Momentum = b.Velocity * b.Mass;
 
-					b.X += b.Velocity.X * FPS.ActualTime / 1000;
-					b.Y += b.Velocity.Y * FPS.ActualTime / 1000;
+					//b.Velocity = b.Velocity0 + velocityD;
+					//b.X += b.Velocity.X * FPS.ActualTime / 1000;
+					//b.Y += b.Velocity.Y * FPS.ActualTime / 1000;*/
 				}
 
 				//Проверка на столкновение и столкновение
@@ -210,8 +227,8 @@ namespace Figures
 
 							b.Momentum = b.Momentum - body.Momentum;
 
-							b.StartMoveByMomentum1(b.Momentum);
-							body.StartMoveByMomentum1(body.Momentum);
+							b.StartMoveByMomentum(b.Momentum);
+							body.StartMoveByMomentum(body.Momentum);
 
 							if (NewLog != null) NewLog(b.Momentum + "\n" + body.Momentum + "\n");
 
@@ -236,9 +253,8 @@ namespace Figures
 						if (b.Momentum.LengthSquared == 0)
 							continue;
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
-						//fpsCount.Text = FPS.ToString();
-						fpsCount.Text = ((int)FPS.FrameAverage).ToString();
 					}
+					fpsCount.Text = ((int)FPS.FrameAverage).ToString();
 				};
 				try { disp.Invoke(action); }
 				catch { return; }

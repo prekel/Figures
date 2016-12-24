@@ -25,9 +25,9 @@ namespace Figures
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-        int n = 0;
+		int n = 0;
 		Body[] bodies = new Body[500];
-        bool F;
+		bool F;
 		string log = "";
 		private Connection serv;
 		private IPAddress servIp;
@@ -40,33 +40,38 @@ namespace Figures
 			AddButton.Click += AddButton_Click;
 			ConnectionButton.Click += ConnectionButton_Click;
 
-			//var r = (1280 / 325.0) * 25 / 2;
+			////var r = (1280 / 325.0) * 25 / 2;
+			//var r = 50;
+			//var m = 10 / 1000.0;
+			//var mu = 0.3;
+			//var ck = 45;
+			//var M = 16;
 			var r = 50;
-			var m = 10 / 1000.0;
+			var m = 1;
 			var mu = 0.1;
-			var ck = 40;
-            var M = 16;
+			var ck = 10;
+			var M = 16;
 
 			for (var i = 0; i < M / 2; i++)
 			{
 				bodies[i] = new Body(n, 150 + i * 105, 150, r, m, mu, ck, Brushes.AliceBlue, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
-                n++;
+				n++;
 			}
 
 			for (var i = M / 2; i < M; i++)
 			{
 				bodies[i] = new Body(n, 150 + (i - M / 2) * 105, 600, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
-                n++;
+				n++;
 			}
 
 			var fps = 100;
-			var cap = 20;
+			var cap = 4;
 
 			var loop = new Thread(Body.Move);
-			loop.Start(new object[] { bodies, Dispatcher, fpsCount, fps, cap } );
-			
+			loop.Start(new object[] { bodies, Dispatcher, fpsCount, fps, cap });
+
 		}
 
 		public void ConnectionButton_Click(object sender, RoutedEventArgs e)
@@ -95,14 +100,14 @@ namespace Figures
 		}
 
 		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (F)
-            {
-                bodies[n] = new Body(n, e.GetPosition(Grid).X, Grid.ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
-                Grid.Children.Add(bodies[n].Figure);
-                n++;
+		{
+			if (F)
+			{
+				bodies[n] = new Body(n, e.GetPosition(Grid).X, Grid.ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
+				Grid.Children.Add(bodies[n].Figure);
+				n++;
 			}
-        }
+		}
 
 		public static Vector Norm(Vector a)
 		{
@@ -111,9 +116,9 @@ namespace Figures
 			return b;
 		}
 
-        private void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-	        F = !F;
-        }
+		private void AddButton_Click(object sender, RoutedEventArgs e)
+		{
+			F = !F;
+		}
 	}
 }
