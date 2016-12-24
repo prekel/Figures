@@ -33,7 +33,10 @@ namespace Figures
 
 		public delegate void StringContainer(string s);
 		public static event StringContainer NewLog;
+		public static event StringContainer MomentumChange;
 
+		/// <summary> Номер </summary>
+		public int Number { get; set; }
 		/// <summary> Масcа </summary>
 		public double Mass { get { return _m; } set { _m = value; } }
 		/// <summary> Абцисса центра </summary>
@@ -65,6 +68,7 @@ namespace Figures
 		public Stopwatch Clock = new Stopwatch();
 
 		/// <summary> Создаёт тело </summary>
+		/// <param name="n"> Номер </param>
 		/// <param name="x"> Абцисса центра (px) </param>
 		/// <param name="y"> Ордината центра (px) </param>
 		/// <param name="r"> Радиус (px) </param>
@@ -73,7 +77,7 @@ namespace Figures
 		/// <param name="speed"> Коэффициент скорости </param>
 		/// <param name="fill"> Кисть заполнения </param>
 		/// <param name="fillstroke"> Кисть границы </param>
-		public Body(double x, double y, double r, double m, double mu, double speed, Brush fill, Brush fillstroke)
+		public Body(int n, double x, double y, double r, double m, double mu, double speed, Brush fill, Brush fillstroke)
 		{
 			Figure = new Ellipse
 			{
@@ -86,7 +90,7 @@ namespace Figures
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Bottom
 			};
-			X = x; Y = y; Radius = r; Mass = m; Mu = mu; KV = speed;
+			X = x; Y = y; Radius = r; Mass = m; Mu = mu; KV = speed; Number = n;
 			Friction = Mu * Mass * G * FK;
 			Figure.MouseUp += StartByClick2;
 		}
@@ -97,7 +101,7 @@ namespace Figures
 			var coords = e.GetPosition(Figure);
 			if (e.ChangedButton.ToString() == "Right")
 			{
-				Momentum = new Vector(0, 0);
+				StartMoveByMomentum1(new Vector(0, 0));
 			}
 			else
 			{
@@ -106,6 +110,9 @@ namespace Figures
 				Momentum = new Vector(-coords.X, -coords.Y) * KV * Mass;
 			}
 			StartMoveByMomentum1(Momentum);
+
+			if (MomentumChange != null)
+				MomentumChange("$momentumchange " + Number + " " + X + " " + Y + " " + Momentum.X + " " + Momentum.Y);
 		}
 
 		/// <summary> Старт при столкновени </summary>
@@ -149,6 +156,7 @@ namespace Figures
 
 					var t = b.Clock.ElapsedMilliseconds / 1000.0;
 					var velocityD = b.Accelerate * (t * t * 0.5);
+					//var velocityD = b.Accelerate * t;
 
 					//Остановка при маленькой скорости
 					if (b.Velocity0.LengthSquared < velocityD.LengthSquared)
@@ -205,7 +213,7 @@ namespace Figures
 							b.StartMoveByMomentum1(b.Momentum);
 							body.StartMoveByMomentum1(body.Momentum);
 
-							NewLog?.Invoke(b.Momentum + "\n" + body.Momentum + "\n");
+							if (NewLog != null) NewLog(b.Momentum + "\n" + body.Momentum + "\n");
 
 							//break;
 							goto draw;

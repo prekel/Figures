@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Net;
+using FiguresServer;
 
 namespace Figures
 {
@@ -27,6 +29,8 @@ namespace Figures
 		Body[] bodies = new Body[500];
         bool F;
 		string log = "";
+		private Connection serv;
+		private IPAddress servIp;
 
 		public MainWindow()
 		{
@@ -35,7 +39,6 @@ namespace Figures
 			MouseUp += MainWindow_MouseUp;
 			AddButton.Click += AddButton_Click;
 			ConnectionButton.Click += ConnectionButton_Click;
-			//Body.NewLog += NewLog;
 
 			//var r = (1280 / 325.0) * 25 / 2;
 			var r = 50;
@@ -46,14 +49,14 @@ namespace Figures
 
 			for (var i = 0; i < M / 2; i++)
 			{
-				bodies[i] = new Body(150 + i * 105, 150, r, m, mu, ck, Brushes.AliceBlue, Brushes.DarkOliveGreen);
+				bodies[i] = new Body(n, 150 + i * 105, 150, r, m, mu, ck, Brushes.AliceBlue, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
                 n++;
 			}
 
 			for (var i = M / 2; i < M; i++)
 			{
-				bodies[i] = new Body(150 + (i - M / 2) * 105, 600, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
+				bodies[i] = new Body(n, 150 + (i - M / 2) * 105, 600, r, m, mu, ck, Brushes.Tomato, Brushes.DarkOliveGreen);
 				Grid.Children.Add(bodies[i].Figure);
                 n++;
 			}
@@ -71,6 +74,19 @@ namespace Figures
 			var condial = new ConnectionDialog(log);
 			condial.Show();
 			condial.NewLog += NewLog;
+			condial.AcceptConnect += AcceptConnect;
+			servIp = IPAddress.Parse(condial.IPBox.Text);
+		}
+
+		public void AcceptConnect(Connection connect)
+		{
+			serv = connect;
+			Body.MomentumChange += MomentumChange;
+		}
+
+		public void MomentumChange(string s)
+		{
+			serv.Send(s, servIp);
 		}
 
 		private void NewLog(string s)
@@ -82,7 +98,7 @@ namespace Figures
         {
             if (F)
             {
-                bodies[n] = new Body(e.GetPosition(Grid).X, Grid.ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
+                bodies[n] = new Body(n, e.GetPosition(Grid).X, Grid.ActualHeight - e.GetPosition(Grid).Y, 50, 10 / 1000.0, 0.1, 40, Brushes.Cyan, Brushes.DarkOliveGreen);
                 Grid.Children.Add(bodies[n].Figure);
                 n++;
 			}
