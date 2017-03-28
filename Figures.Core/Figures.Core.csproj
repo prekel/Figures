@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B6ABEFFB-A94D-4036-BB98-AD05679B8F3B}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Figures.OpenGL</RootNamespace>
-    <AssemblyName>Figures.OpenGL</AssemblyName>
+    <ProjectGuid>{9193E130-C53C-4759-B9E5-F876D7CE7825}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Figures.Core</RootNamespace>
+    <AssemblyName>Figures.Core</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,24 +32,20 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Serialization" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MyGeometry\MyGeometry.Draw\MyGeometry.Draw.csproj">
-      <Project>{84ba91d0-8938-48ea-ae0a-9649c52ca012}</Project>
-      <Name>MyGeometry.Draw</Name>
+    <ProjectReference Include="..\MyGeometry\MyGeometry.Core\MyGeometry.Core.csproj">
+      <Project>{020518b4-dbdd-4642-8fe3-2ca67e4b62ba}</Project>
+      <Name>MyGeometry.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
