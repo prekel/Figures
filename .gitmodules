@@ -1,0 +1,4 @@
+[submodule "MyGeometry"]
+	path = MyGeometry
+	url = C:/Users/vladislav/OneDrive/Projects/MyGeometry
+	branch = develop
