@@ -17,6 +17,10 @@ using System.Timers;
 using System.Windows.Threading;
 using System.IO;
 using System.Diagnostics;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace Figures
 {
@@ -29,7 +33,7 @@ namespace Figures
 		private const double FK = 1000;
 
 		private Vector _f, _a, _v, _p, _v0, _s0, _s;
-		private double _x, _y, _r, _m, _μ, _fr, _kv;
+		private double _x, _y, _r, _m, _μ, _fr, _kv, _pt;
 
 		public delegate void StringContainer(string s);
 		public static event StringContainer NewLog;
@@ -49,8 +53,10 @@ namespace Figures
 		public double Mu { get { return _μ; } set { _μ = value; } }
 		/// <summary> Трение </summary>
 		public double Friction { get { return _fr; } set { _fr = value; } }
-		/// <summary> Кадры в секунду </summary>
+		/// <summary> Коэффициент скорости </summary>
 		public double KV { get { return _kv; } set { _kv = value; } }
+		/// <summary> Кадры в секунду </summary>
+		public double PTime { get { return _pt; } set { _pt = value; } }
 		/// <summary> Вектор силы </summary>
 		public Vector Force { get { return _f; } set { _f = value; } }
 		/// <summary> Вектор ускорения </summary>
@@ -112,8 +118,8 @@ namespace Figures
 				coords.X -= Radius;
 				coords.Y = -coords.Y + Radius;
 				Momentum = new Vector(-coords.X, -coords.Y) * KV * Mass;
+				StartMoveByMomentum(Momentum);
 			}
-			StartMoveByMomentum(Momentum);
 
 			if (MomentumChange != null)
 				MomentumChange("$momentumchange " + Number + " " + X + " " + Y + " " + Momentum.X + " " + Momentum.Y);
@@ -134,6 +140,7 @@ namespace Figures
 			Accelerate *= Friction / Mass;
 
 			Clock.Restart();
+			PTime = 0;
 		}
 
 		/// <summary> 
@@ -163,33 +170,58 @@ namespace Figures
 					if (b.Momentum.LengthSquared == 0)
 						continue;
 
-					var t = b.Clock.ElapsedMilliseconds / 1000.0;
+					//var t = b.Clock.ElapsedMilliseconds / 1000.0;
+					//var t = b.Clock.ElapsedTicks / 10000000.0;
+					//var t = b.Clock.ElapsedMilliseconds / 1000.0;
+					//var f = (double)Stopwatch.Frequency;
+					//var t = b.Clock.ElapsedTicks / f;
+					var dt = FPS.ActualTime;
+					//Debug.WriteLine(b.Clock.ElapsedMilliseconds + " " + b.Clock.ElapsedTicks / f + " " + f);
+					//var dt =  t - b.PTime;
+					//b.PTime = t;
+					//var t = b.Clock.Elapsed.TotalSeconds;
 					//var velocityD = b.Accelerate * (t * t * 0.5);
 					//var velocityD = b.Accelerate * t;
-
-					var ShiftD1 = b.Velocity0 * t;
-					var ShiftD2 = b.Accelerate * (t * t * 0.5);
-
-					b.Shift = b.Shift0 + ShiftD1 + ShiftD2;
-
-					b.X = b.Shift.X;
-					b.Y = b.Shift.Y;
-
-					if (ShiftD1.LengthSquared < (ShiftD2 * 2).LengthSquared)
+					var v1 = b.Accelerate * dt;
+					if (v1.LengthSquared > b.Velocity.LengthSquared)
 					{
 						b.StartMoveByMomentum(new Vector(0, 0));
 						b.Clock.Stop();
 						continue;
-					}
+                    }
+					b.Velocity += v1;
+					//var dv = b.Velocity0 + v1;
+					var ds = b.Velocity * dt;
 
-					b.Velocity = b.Momentum / b.Mass;
-					b.Velocity = b.Velocity0 + b.Accelerate * t;
 					b.Momentum = b.Velocity * b.Mass;
+
+					b.X += ds.X;
+					b.Y += ds.Y;
+
+					//var ShiftD1 = b.Velocity0 * t;
+					//var ShiftD2 = b.Accelerate * (t * t * 0.5);
+
+					//b.Shift = b.Shift0 + ShiftD1 + ShiftD2;
+
+					//b.X = b.Shift.X;
+					//b.Y = b.Shift.Y;
+
+					//if (ShiftD1.LengthSquared < (ShiftD2 * 2).LengthSquared)
+					//{
+					//	b.StartMoveByMomentum(new Vector(0, 0));
+					//b.Clock.Stop();
+					//	continue;
+					//}
+
+					//b.Velocity = b.Momentum / b.Mass;
+					//b.Velocity = b.Velocity0 + b.Accelerate * t;
+					//b.Momentum = b.Velocity * b.Mass;
 
 					//b.Velocity = b.Velocity0 + velocityD;
 					//b.X += b.Velocity.X * FPS.ActualTime / 1000;
 					//b.Y += b.Velocity.Y * FPS.ActualTime / 1000;*/
 				}
+
 
 				//Проверка на столкновение и столкновение
 				foreach (var b in bodies)
@@ -204,20 +236,31 @@ namespace Figures
 							break;
 						if (body == b)
 							continue;
+						if (body.Momentum.LengthSquared > 0)
+							continue;
 
 						// m2 - Квадрат расстояния, r2 - квадрат суммы радиусов
 						//var m = Math.Sqrt((X - body.X) * (X - body.X) + (Y - body.Y) * (Y - body.Y));
 						var m2 = (b.X - body.X) * (b.X - body.X) + (b.Y - body.Y) * (b.Y - body.Y);
 						var r = b.Radius + body.Radius;
 						var r2 = r * r;
-						if (m2 <= r2)
+						if (m2 < r2)
 						{
+							var ds = b.Velocity * FPS.ActualTime;
+							b.X -= ds.X;
+							b.Y -= ds.Y;
+							m2 = (b.X - body.X) * (b.X - body.X) + (b.Y - body.Y) * (b.Y - body.Y);
+
 							var vb = new Vector(body.X - b.X, body.Y - b.Y);
 							vb.Normalize();
 							vb *= Math.Sqrt(m2) - r;
+							Debug.WriteLine(b.Number + " " + body.Number + " " + FPS.ActualSumTime + " " + FPS.ActualTime + " " + ds + " " + Math.Sqrt(m2));
+							Debug.WriteLine(b.Momentum + " " + body.Momentum + " " + vb);
+							body.Momentum = new Vector(body.X - b.X, body.Y - b.Y);
 							b.X += vb.X;
 							b.Y += vb.Y;
-							body.Momentum = new Vector(body.X - b.X, body.Y - b.Y);
+
+							Debug.WriteLine(b.Momentum + " " + body.Momentum);
 
 							var temp = body.Momentum;
 							temp.Normalize();
@@ -226,6 +269,7 @@ namespace Figures
 							body.Momentum *= b.Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(b.Momentum, body.Momentum) * 180 / Math.PI));
 
 							b.Momentum = b.Momentum - body.Momentum;
+							Debug.WriteLine(b.Momentum + " " + body.Momentum + '\n');
 
 							b.StartMoveByMomentum(b.Momentum);
 							body.StartMoveByMomentum(body.Momentum);
@@ -241,7 +285,7 @@ namespace Figures
 				draw:;
 
 				// Приостановка потока на часть отведенного времени для кадра
-				FPS.SleepPart(0.7);
+				//FPS.SleepPart(0.1);
 
 				// Проверка на движение и рисование в основном потоке
 				Action action = () =>
@@ -255,6 +299,7 @@ namespace Figures
 						b.Figure.Margin = new Thickness(b.X - b.Radius, 0, 0, b.Y - b.Radius);
 					}
 					fpsCount.Text = ((int)FPS.FrameAverage).ToString();
+					//Debug.WriteLine(FPS.FrameAverage);
 				};
 				try { disp.Invoke(action); }
 				catch { return; }

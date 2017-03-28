@@ -58,7 +58,15 @@ namespace FiguresServer
 			{
 				var request = message.Split();
 
-				var clients = (from p in players where !Equals(player.Ip, ip) select p.Ip).ToArray();
+				var list = new List<IPAddress>();
+				foreach (var p in players)
+				{
+					if (p == null)
+						continue;
+					if (!Equals(p.Ip, ip))
+						list.Add(p.Ip);
+				}
+				var clients = list.ToArray();
 
 				switch (request[0])
 				{
@@ -73,7 +81,8 @@ namespace FiguresServer
 						//Connect.Send("$deleteplayer" + " " + ip.ToString(), clients);
 						break;
 					case "$momentumchange":
-						Connect.SendNoThread("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3], clients);
+						//Connect.SendNoThread("$momentumchange" + " " + request[1] + " " + request[2] + " " + request[3] + request[4] + " " + request[5] + " " + request[6], clients);
+						Connect.SendNoThread(message, clients);
 						break;
 					case "$add":
 						Connect.SendNoThread("$add" + " " + request[1] + " " + request[2], clients);

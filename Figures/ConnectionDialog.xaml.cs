@@ -72,7 +72,7 @@ namespace Figures
 				{
 					rserv = new Connection(rport);
 					rserv.Receive();
-					rserv.NewMessage += Serv_NewMessage;
+					rserv.NewMessage += RServ_NewMessage;
 				}
 			}
 			else
@@ -83,18 +83,27 @@ namespace Figures
 			}
 			var s = "$connect";
 			serv.Send(s, IPAddress.Parse(IPBox.Text));
-			logBox.Text += s + '\n';
-			if (NewLog != null) NewLog(s);
+			if (NewLog != null) NewLog(s + '\n');
 		}
 
 		private void Serv_NewMessage(IPAddress ip, string message)
 		{
 			if (NewLog != null) NewLog(ip + " " + message + "\n");
-			Action action = () => { logBox.Text += ip + " " + message + "\n"; };
-			Dispatcher.Invoke(action);
-			if (message != "$acceptconnect") return;
-			serv.NewMessage -= Serv_NewMessage;
-			if (AcceptConnect != null) AcceptConnect(serv);
+			if (message == "$acceptconnect")
+			{
+				serv.NewMessage -= Serv_NewMessage;
+				if (AcceptConnect != null) AcceptConnect(serv);
+			}
+		}
+
+		private void RServ_NewMessage(IPAddress ip, string message)
+		{
+			if (NewLog != null) NewLog(ip + " " + message + "\n");
+			if (message == "$acceptconnect")
+			{
+				rserv.NewMessage -= Serv_NewMessage;
+				if (AcceptConnect != null) AcceptConnect(rserv);
+			}
 		}
 
 		private void LogBox_TextChanged(object sender, EventArgs e)
