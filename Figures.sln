@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25914.0
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figures", "Figures\Figures.csproj", "{F4440701-C1B9-425C-B6DF-63189DAD1D43}"
 EndProject
@@ -10,6 +10,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{09B13278-609D-49F8-9096-3648351AE562}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{5BEC7021-F5F8-4E17-A20A-D667F3598C64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figures.OpenGL", "Figures.OpenGL\Figures.OpenGL.csproj", "{B6ABEFFB-A94D-4036-BB98-AD05679B8F3B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MyGeometry", "MyGeometry", "{84A887DB-9EC4-4751-A0B0-9FDB36046378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGeometry.Core", "MyGeometry\MyGeometry.Core\MyGeometry.Core.csproj", "{020518B4-DBDD-4642-8FE3-2CA67E4B62BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGeometry.Draw", "MyGeometry\MyGeometry.Draw\MyGeometry.Draw.csproj", "{84BA91D0-8938-48EA-AE0A-9649C52CA012}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,8 +41,24 @@ Global
 		{5BEC7021-F5F8-4E17-A20A-D667F3598C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BEC7021-F5F8-4E17-A20A-D667F3598C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BEC7021-F5F8-4E17-A20A-D667F3598C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6ABEFFB-A94D-4036-BB98-AD05679B8F3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6ABEFFB-A94D-4036-BB98-AD05679B8F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6ABEFFB-A94D-4036-BB98-AD05679B8F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6ABEFFB-A94D-4036-BB98-AD05679B8F3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{020518B4-DBDD-4642-8FE3-2CA67E4B62BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020518B4-DBDD-4642-8FE3-2CA67E4B62BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020518B4-DBDD-4642-8FE3-2CA67E4B62BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020518B4-DBDD-4642-8FE3-2CA67E4B62BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84BA91D0-8938-48EA-AE0A-9649C52CA012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84BA91D0-8938-48EA-AE0A-9649C52CA012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84BA91D0-8938-48EA-AE0A-9649C52CA012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84BA91D0-8938-48EA-AE0A-9649C52CA012}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{020518B4-DBDD-4642-8FE3-2CA67E4B62BA} = {84A887DB-9EC4-4751-A0B0-9FDB36046378}
+		{84BA91D0-8938-48EA-AE0A-9649C52CA012} = {84A887DB-9EC4-4751-A0B0-9FDB36046378}
 	EndGlobalSection
 EndGlobal
