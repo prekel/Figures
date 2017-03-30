@@ -17,10 +17,6 @@ using System.Timers;
 using System.Windows.Threading;
 using System.IO;
 using System.Diagnostics;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 
 namespace Figures
 {
@@ -188,7 +184,7 @@ namespace Figures
 						b.StartMoveByMomentum(new Vector(0, 0));
 						b.Clock.Stop();
 						continue;
-                    }
+					}
 					b.Velocity += v1;
 					//var dv = b.Velocity0 + v1;
 					var ds = b.Velocity * dt;
