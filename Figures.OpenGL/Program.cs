@@ -23,7 +23,7 @@ namespace MyGeometry.Draw.Example
 	{
 		private GameWindow game;
 		private readonly Stopwatch t;
-		public double l = 1;
+		public double l = 0;
 		private double c => t.Elapsed.TotalSeconds * l;
 		//private double c { get; set; }
 		private double r = 1d;
@@ -73,27 +73,33 @@ namespace MyGeometry.Draw.Example
 			if (game.Keyboard[Key.W])
 			{
 				y += 0.01; //p.Y += 0.01;
+				((CircleBody)s[2]).Velocity.Y += l;
 			}
 			if (game.Keyboard[Key.S])
 			{
 				y -= 0.01; //p.Y -= 0.01;
+				((CircleBody)s[2]).Velocity.Y -= l;
 			}
 			if (game.Keyboard[Key.A])
 			{
 				x -= 0.01; //p.X -= 0.01;
+				((CircleBody)s[2]).Velocity.X -= l;
 			}
 			if (game.Keyboard[Key.D])
 			{
 				x += 0.01; //p.X += 0.01;
+				((CircleBody)s[2]).Velocity.X += l;
 			}
 			if (game.Keyboard[Key.M])
 			{
-				l += 0.01; //p.Size += 0.1f;
+				l += 0.001; //p.Size += 0.1f;
 			}
 			if (game.Keyboard[Key.N])
 			{
-				l -= 0.01; //p.Size -= 0.1f;
+				l -= 0.001; //p.Size -= 0.1f;
 			}
+
+			((CircleBody)s[2]).Step(game.UpdatePeriod);
 
 			for (var i = 0; i < k; i++)
 			{
@@ -102,6 +108,11 @@ namespace MyGeometry.Draw.Example
 				//pol[i].X = r * Math.Cos(c + 2 * Math.PI / k * i);
 				//pol[i].Y = r * Math.Sin(c + 2 * Math.PI / k * i);
 			}
+
+			//if (game.UpdateFrequency > 100)
+			//{
+			//	Debug.WriteLine(game.UpdateFrequency);
+			//}
 
 			//c += l / 10;
 		}
@@ -114,9 +125,14 @@ namespace MyGeometry.Draw.Example
 			GL.LoadIdentity();
 			GL.Ortho(-1.0, 1.0, -1.0, 1.0, 0.0, 4.0);
 
-			Drawer.Draw(s);
+			Scene.Draw(s);
 
-			game.Title = game.RenderFrequency.ToString(CultureInfo.InvariantCulture);
+			game.Title = $"{game.RenderFrequency:N8}";
+			//game.Title = $"{game.RenderTime:N8} {game.UpdateTime:N8}";
+			//if (game.Title.Length > 25)
+			//{
+			//	//Debug.WriteLine(game.Title);
+			//}
 
 			game.SwapBuffers();
 		}
@@ -167,7 +183,7 @@ namespace MyGeometry.Draw.Example
 				ColorFill = System.Drawing.Color.CornflowerBlue
 			};
 
-			var cir = new CircleBoby(0.3, 0, 0)
+			var cir = new CircleBody(0.3, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.Bisque,
@@ -183,7 +199,7 @@ namespace MyGeometry.Draw.Example
 			listX = new double[k];
 			listY = new double[k];
 
-			game.Run(60);
+			game.Run(60, 60);
 		}
 
 		private void OnGameMouseMove(object sender, MouseMoveEventArgs e)
