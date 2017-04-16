@@ -70,27 +70,27 @@ namespace MyGeometry.Draw.Example
 			}
 			if (game.Keyboard[Key.W])
 			{
-				y += 0.01; p.Y += 0.01;
+				y += 0.01; //p.Y += 0.01;
 			}
 			if (game.Keyboard[Key.S])
 			{
-				y -= 0.01; p.Y -= 0.01;
+				y -= 0.01; //p.Y -= 0.01;
 			}
 			if (game.Keyboard[Key.A])
 			{
-				x -= 0.01; p.X -= 0.01;
+				x -= 0.01; //p.X -= 0.01;
 			}
 			if (game.Keyboard[Key.D])
 			{
-				x += 0.01; p.X += 0.01;
+				x += 0.01; //p.X += 0.01;
 			}
 			if (game.Keyboard[Key.M])
 			{
-				l += 0.01; p.Size += 0.1f;
+				l += 0.01; //p.Size += 0.1f;
 			}
 			if (game.Keyboard[Key.N])
 			{
-				l -= 0.01; p.Size -= 0.1f;
+				l -= 0.01; //p.Size -= 0.1f;
 			}
 
 			for (var i = 0; i < k; i++)
