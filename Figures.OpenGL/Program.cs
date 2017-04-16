@@ -36,7 +36,7 @@ namespace MyGeometry.Draw.Example
 
 		private void OnGameOnLoad(object sender, EventArgs e)
 		{
-			game.VSync = VSyncMode.On;
+			game.VSync = VSyncMode.On;game.
 
 			GL.Enable(EnableCap.AlphaTest);
 			GL.Enable(EnableCap.Blend);
@@ -73,30 +73,34 @@ namespace MyGeometry.Draw.Example
 			if (game.Keyboard[Key.W])
 			{
 				y += 0.01; //p.Y += 0.01;
-				((CircleBody)s[2]).Velocity.Y += l;
+				//((CircleBody)s[2]).Velocity.Y += l;
+				((CircleBody)s[2]).Accelerate.Y += l;
 			}
 			if (game.Keyboard[Key.S])
 			{
 				y -= 0.01; //p.Y -= 0.01;
-				((CircleBody)s[2]).Velocity.Y -= l;
+				//((CircleBody)s[2]).Velocity.Y -= l;
+				((CircleBody)s[2]).Accelerate.Y -= l;
 			}
 			if (game.Keyboard[Key.A])
 			{
 				x -= 0.01; //p.X -= 0.01;
-				((CircleBody)s[2]).Velocity.X -= l;
+				//((CircleBody)s[2]).Velocity.X -= l;
+				((CircleBody)s[2]).Accelerate.X -= l;
 			}
 			if (game.Keyboard[Key.D])
 			{
 				x += 0.01; //p.X += 0.01;
-				((CircleBody)s[2]).Velocity.X += l;
+				//((CircleBody)s[2]).Velocity.X += l;
+				((CircleBody)s[2]).Accelerate.X += l;
 			}
 			if (game.Keyboard[Key.M])
 			{
-				l += 0.001; //p.Size += 0.1f;
+				l += 0.0001; //p.Size += 0.1f;
 			}
 			if (game.Keyboard[Key.N])
 			{
-				l -= 0.001; //p.Size -= 0.1f;
+				l -= 0.0001; //p.Size -= 0.1f;
 			}
 
 			((CircleBody)s[2]).Step(game.UpdatePeriod);
@@ -127,7 +131,8 @@ namespace MyGeometry.Draw.Example
 
 			Scene.Draw(s);
 
-			game.Title = $"{game.RenderFrequency:N8}";
+			//game.Title = $"{game.RenderFrequency:N8}";
+			game.Title = game.RenderFrequency.ToString(CultureInfo.InvariantCulture);
 			//game.Title = $"{game.RenderTime:N8} {game.UpdateTime:N8}";
 			//if (game.Title.Length > 25)
 			//{

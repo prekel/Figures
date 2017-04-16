@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2017 Vladislav Prekel
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,9 +98,11 @@ namespace Figures.Core
 			Move(Velocity);
 		}
 
-		public void Step(double time)
+		public void Step(double dt)
 		{
-			Move(Velocity * time);
+			var v1 = Accelerate * dt;
+			Velocity += v1;
+			Move(Velocity * dt);
 		}
 	}
 }
