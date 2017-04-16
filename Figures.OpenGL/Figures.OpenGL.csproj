@@ -52,6 +52,10 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Figures.Core\Figures.Core.csproj">
+      <Project>{9193e130-c53c-4759-b9e5-f876d7ce7825}</Project>
+      <Name>Figures.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MyGeometry\MyGeometry.Core\MyGeometry.Core.csproj">
       <Project>{020518b4-dbdd-4642-8fe3-2ca67e4b62ba}</Project>
       <Name>MyGeometry.Core</Name>

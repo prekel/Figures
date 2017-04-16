@@ -15,6 +15,8 @@ using OpenTK.Input;
 using MyGeometry.Core;
 using MyGeometry.Draw;
 
+using Figures.Core;
+
 namespace MyGeometry.Draw.Example
 {
 	public class Program
@@ -165,7 +167,7 @@ namespace MyGeometry.Draw.Example
 				ColorFill = System.Drawing.Color.CornflowerBlue
 			};
 
-			var cir = new Circle(0.3, 0, 0)
+			var cir = new CircleBoby(0.3, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.Bisque,

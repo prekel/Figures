@@ -10,5 +10,20 @@ namespace Figures.Core
 {
 	public class CircleBoby : Circle
 	{
+		public CircleBoby()
+		{
+		}
+
+		public CircleBoby(double r) : base(r)
+		{
+		}
+
+		public CircleBoby(double r, double x, double y) : base(r, x, y)
+		{
+		}
+
+		public CircleBoby(double r, Point p) : base(r, p)
+		{
+		}
 	}
 }
