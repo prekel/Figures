@@ -109,5 +109,17 @@ namespace Figures.Core
 			Velocity += v2;
 			Move(Velocity * dt);
 		}
+
+		public void Click(Point p, double r)
+		{
+			//var v = new Vector(this, p);
+			//Velocity = -v;
+			Velocity = new Vector(p, this);
+		}
+
+		public void Click(double x, double y, double r)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

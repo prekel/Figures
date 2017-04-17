@@ -153,20 +153,44 @@ namespace MyGeometry.Draw.Example
 
 		private void OnMouseDown(object sender, MouseButtonEventArgs e)
 		{
-			Debug.WriteLine($"{e.Mouse.X} {e.Mouse.Y}");
-			var x1 = e.Mouse.X - game.Width / 2;
-			var y1 = -e.Mouse.Y + game.Height / 2;
-			Debug.WriteLine($"{x1} {y1}");
-			var x2 = x1 / (game.Width / 2.0);
-			var y2 = y1 / (game.Height / 2.0);
-			Debug.WriteLine($"{x2} {y2}");
+			//Debug.WriteLine($"{e.Mouse.X} {e.Mouse.Y}");
+			//var x1 = e.Mouse.X - game.Width / 2;
+			//var y1 = -e.Mouse.Y + game.Height / 2;
+			//Debug.WriteLine($"{x1} {y1}");
+			//var x2 = x1 / (game.Width / 2.0);
+			//var y2 = y1 / (game.Height / 2.0);
+			//Debug.WriteLine($"{x2} {y2}");
+			var p = IntCoordsToDouble(game.Mouse.X, game.Mouse.Y, game.Width, game.Height);
 			s.Add(new Point
 			{
-				X = x2,
-				Y = y2,
+				X = p.X,
+				Y = p.Y,
 				Color = System.Drawing.Color.Black,
-				Size = 2
+				Size = 3
 			});
+			foreach (var i in s)
+			{
+				if (i is CircleBody)
+				{
+					var j = (CircleBody)i;
+					var r = j.Distance(p);
+					if (r <= j.R)
+					{
+						j.Click(p, r);
+					}
+				}
+			}
+		}
+
+		public static Point IntCoordsToDouble(int x, int y, int width, int height)
+		{
+			var x1 = x - width / 2;
+			var y1 = -y + height / 2;
+			//Debug.WriteLine($"{x1} {y1}");
+			var x2 = x1 / (width / 2.0);
+			var y2 = y1 / (height / 2.0);
+			//Debug.WriteLine($"{x2} {y2}");
+			return new Point(x2, y2);
 		}
 
 		public static void Main()
