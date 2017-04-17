@@ -32,7 +32,7 @@ namespace MyGeometry.Draw.Example
 		double[] listY;
 		double x, y;
 		double rotate_x, rotate_y;
-		Scene s;
+		DrawScene s;
 
 		private void OnGameOnLoad(object sender, EventArgs e)
 		{
@@ -112,6 +112,7 @@ namespace MyGeometry.Draw.Example
 			}
 
 			((CircleBody)s[2]).Step(game.UpdatePeriod);
+			((CircleBody)s[3]).Step(game.UpdatePeriod);
 
 			for (var i = 0; i < k; i++)
 			{
@@ -138,7 +139,7 @@ namespace MyGeometry.Draw.Example
 			//GL.Ortho(-1.0, 1.0, -1.0, 1.0, 0.0, 4.0);
 			GL.Ortho(s.Left, s.Right, s.Bottom, s.Top, 0.0, 4.0);
 
-			Scene.Draw(s);
+			DrawScene.Draw(s);
 
 			game.Title = $"{game.RenderFrequency:N15} {game.UpdatePeriod:N15}";
 			//game.Title = game.RenderFrequency.ToString(CultureInfo.InvariantCulture);
@@ -170,9 +171,8 @@ namespace MyGeometry.Draw.Example
 			});
 			foreach (var i in s)
 			{
-				if (i is CircleBody)
+				if (i is CircleBody j)
 				{
-					var j = (CircleBody)i;
 					var r = j.Distance(p);
 					if (r <= j.R)
 					{
@@ -218,14 +218,15 @@ namespace MyGeometry.Draw.Example
 			t = new Stopwatch();
 			t.Start();
 
-			s = new Scene();
+			s = new DrawScene();
 
 			var p = new Point
 			{
 				X = 0.6,
 				Y = -0.2,
 				Size = 6,
-				Color = System.Drawing.Color.BlueViolet
+				Color = System.Drawing.Color.BlueViolet,
+				Scene = s
 			};
 
 			var pol = new Polygon(4)
@@ -238,23 +239,38 @@ namespace MyGeometry.Draw.Example
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.Navy,
 				IsFill = true,
-				ColorFill = System.Drawing.Color.CornflowerBlue
+				ColorFill = System.Drawing.Color.CornflowerBlue,
+				Scene = s
 			};
 
-			var cir = new CircleBody(0.3, 0, 0)
+			var cir = new CircleBody(0.1, 0.5, 0)
 			{
 				IsFill = true,
-				ColorFill = System.Drawing.Color.Bisque,
+				ColorFill = System.Drawing.Color.LightGray,
 				IsOutline = true,
-				ColorOutline = System.Drawing.Color.IndianRed,
-				OutlineWidth = 3,
+				ColorOutline = System.Drawing.Color.DarkGray,
+				OutlineWidth = 1,
 				Mass = 1,
-				Forces = new Forces(new Vector(0, 0))
+				Forces = new Forces(new Vector(0, 0)),
+				Scene = s
+			};
+
+			var bigcir = new CircleBody(0.3, 0, 0)
+			{
+				IsFill = true,
+				ColorFill = System.Drawing.Color.DarkSeaGreen,
+				IsOutline = true,
+				ColorOutline = System.Drawing.Color.DeepSkyBlue,
+				OutlineWidth = 3,
+				Mass = 100000,
+				Forces = new Forces(new Vector(0, 0)),
+				Scene = s
 			};
 
 			s.Add(p);
 			s.Add(pol);
 			s.Add(cir);
+			s.Add(bigcir);
 
 			s.Left *= 1;
 			s.Right *= 1;

@@ -12,6 +12,12 @@ namespace Figures.Core
 {
 	public class CircleBody : Circle, IMovable, ICloneable
 	{
+		/// <summary> Ускорение свободного падения </summary>
+		public const double g = 9.80665;
+
+		/// <summary> Гравитационная постоянная </summary>
+		public const double G = 6.674083131e-11;
+
 		private Vector _f, _a, _v, _p, _v0, _s0, _s;
 		private double _x, _y, _r, _m, _μ, _fr, _kv, _pt;
 
@@ -59,6 +65,8 @@ namespace Figures.Core
 
 		public Forces Forces { get; set; } = new Forces();
 
+		public GravityForces GravityForces { get; set; } = new GravityForces();
+
 		private void Init()
 		{
 			Force = new Vector();
@@ -102,7 +110,19 @@ namespace Figures.Core
 
 		public void Step(double dt)
 		{
-			var v2 = Forces.Resultant * Mass * dt;
+			foreach (var i in Scene)
+			{
+				if (!(i is CircleBody))
+					continue;
+				var j = (CircleBody)i;
+				if (j == this)
+					continue;
+				var f = (G * Mass * j.Mass) / DistanceSquared(j);
+				GravityForces[j] = Vector.Normalize(new Vector(this, j)) * f;
+			}
+
+
+			var v2 = (Forces.Resultant + GravityForces.Resultant) * Mass * dt;
 
 			//var v1 = Accelerate * dt;
 			//Velocity += v1;

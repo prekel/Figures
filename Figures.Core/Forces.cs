@@ -10,7 +10,7 @@ using MyGeometry.Core;
 
 namespace Figures.Core
 {
-	public class Forces : List<Vector>
+	public class Forces : List<Vector>, IForces
 	{
 		public Vector Resultant => new Vector(this.Sum(i => i.X), this.Sum(i => i.Y));
 
