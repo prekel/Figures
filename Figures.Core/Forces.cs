@@ -13,5 +13,13 @@ namespace Figures.Core
 	public class Forces : List<Vector>
 	{
 		public Vector Resultant => new Vector(this.Sum(i => i.X), this.Sum(i => i.Y));
+
+		public Forces()
+		{
+		}
+
+		public Forces(IEnumerable<Vector> forces) => AddRange(forces);
+
+		public Forces(params Vector[] forces) => AddRange(forces);
 	}
 }

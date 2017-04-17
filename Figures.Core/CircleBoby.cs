@@ -57,6 +57,8 @@ namespace Figures.Core
 		/// <summary> Вектор перемещения </summary>
 		public Vector Shift { get { return _s; } set { _s = value; } }
 
+		public Forces Forces { get; set; } = new Forces();
+
 		private void Init()
 		{
 			Force = new Vector();
@@ -100,8 +102,11 @@ namespace Figures.Core
 
 		public void Step(double dt)
 		{
-			var v1 = Accelerate * dt;
-			Velocity += v1;
+			var v2 = Forces.Resultant * Mass * dt;
+
+			//var v1 = Accelerate * dt;
+			//Velocity += v1;
+			Velocity += v2;
 			Move(Velocity * dt);
 		}
 	}

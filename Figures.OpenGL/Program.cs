@@ -23,7 +23,7 @@ namespace MyGeometry.Draw.Example
 	{
 		private GameWindow game;
 		private readonly Stopwatch t;
-		public double l = 0;
+		public double l = 0.01;
 		private double c => t.Elapsed.TotalSeconds * l;
 		//private double c { get; set; }
 		private double r = 1d;
@@ -36,7 +36,7 @@ namespace MyGeometry.Draw.Example
 
 		private void OnGameOnLoad(object sender, EventArgs e)
 		{
-			game.VSync = VSyncMode.On;game.
+			game.VSync = VSyncMode.On;
 
 			GL.Enable(EnableCap.AlphaTest);
 			GL.Enable(EnableCap.Blend);
@@ -72,27 +72,35 @@ namespace MyGeometry.Draw.Example
 			}
 			if (game.Keyboard[Key.W])
 			{
-				y += 0.01; //p.Y += 0.01;
+				y += 0.01;
+				//p.Y += 0.01;
 				//((CircleBody)s[2]).Velocity.Y += l;
-				((CircleBody)s[2]).Accelerate.Y += l;
+				//((CircleBody)s[2]).Accelerate.Y += l;
+				((CircleBody)s[2]).Forces[0].Y += l;
 			}
 			if (game.Keyboard[Key.S])
 			{
-				y -= 0.01; //p.Y -= 0.01;
+				y -= 0.01;
+				//p.Y -= 0.01;
 				//((CircleBody)s[2]).Velocity.Y -= l;
-				((CircleBody)s[2]).Accelerate.Y -= l;
+				//((CircleBody)s[2]).Accelerate.Y -= l;
+				((CircleBody)s[2]).Forces[0].Y -= l;
 			}
 			if (game.Keyboard[Key.A])
 			{
-				x -= 0.01; //p.X -= 0.01;
+				x -= 0.01;
+				//p.X -= 0.01;
 				//((CircleBody)s[2]).Velocity.X -= l;
-				((CircleBody)s[2]).Accelerate.X -= l;
+				//((CircleBody)s[2]).Accelerate.X -= l;
+				((CircleBody)s[2]).Forces[0].X -= l;
 			}
 			if (game.Keyboard[Key.D])
 			{
-				x += 0.01; //p.X += 0.01;
+				x += 0.01;
+				//p.X += 0.01;
 				//((CircleBody)s[2]).Velocity.X += l;
-				((CircleBody)s[2]).Accelerate.X += l;
+				//((CircleBody)s[2]).Accelerate.X += l;
+				((CircleBody)s[2]).Forces[0].X += l;
 			}
 			if (game.Keyboard[Key.M])
 			{
@@ -127,12 +135,13 @@ namespace MyGeometry.Draw.Example
 
 			GL.MatrixMode(MatrixMode.Projection);
 			GL.LoadIdentity();
-			GL.Ortho(-1.0, 1.0, -1.0, 1.0, 0.0, 4.0);
+			//GL.Ortho(-1.0, 1.0, -1.0, 1.0, 0.0, 4.0);
+			GL.Ortho(s.Left, s.Right, s.Bottom, s.Top, 0.0, 4.0);
 
 			Scene.Draw(s);
 
-			//game.Title = $"{game.RenderFrequency:N8}";
-			game.Title = game.RenderFrequency.ToString(CultureInfo.InvariantCulture);
+			game.Title = $"{game.RenderFrequency:N15} {game.UpdatePeriod:N15}";
+			//game.Title = game.RenderFrequency.ToString(CultureInfo.InvariantCulture);
 			//game.Title = $"{game.RenderTime:N8} {game.UpdateTime:N8}";
 			//if (game.Title.Length > 25)
 			//{
@@ -140,6 +149,24 @@ namespace MyGeometry.Draw.Example
 			//}
 
 			game.SwapBuffers();
+		}
+
+		private void OnMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			Debug.WriteLine($"{e.Mouse.X} {e.Mouse.Y}");
+			var x1 = e.Mouse.X - game.Width / 2;
+			var y1 = -e.Mouse.Y + game.Height / 2;
+			Debug.WriteLine($"{x1} {y1}");
+			var x2 = x1 / (game.Width / 2.0);
+			var y2 = y1 / (game.Height / 2.0);
+			Debug.WriteLine($"{x2} {y2}");
+			s.Add(new Point
+			{
+				X = x2,
+				Y = y2,
+				Color = System.Drawing.Color.Black,
+				Size = 2
+			});
 		}
 
 		public static void Main()
@@ -161,6 +188,8 @@ namespace MyGeometry.Draw.Example
 			game.RenderFrame += OnGameOnRenderFrame;
 
 			game.MouseMove += OnGameMouseMove;
+
+			game.MouseDown += OnMouseDown;
 
 			t = new Stopwatch();
 			t.Start();
@@ -194,17 +223,25 @@ namespace MyGeometry.Draw.Example
 				ColorFill = System.Drawing.Color.Bisque,
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.IndianRed,
-				OutlineWidth = 3
+				OutlineWidth = 3,
+				Mass = 1,
+				Forces = new Forces(new Vector(0, 0))
 			};
 
 			s.Add(p);
 			s.Add(pol);
 			s.Add(cir);
 
+			s.Left *= 1;
+			s.Right *= 1;
+			s.Bottom *= 1;
+			s.Top *= 1;
+
 			listX = new double[k];
 			listY = new double[k];
 
-			game.Run(60, 60);
+			//game.Run(60, 60);
+			game.Run(200);//, 200);
 		}
 
 		private void OnGameMouseMove(object sender, MouseMoveEventArgs e)
