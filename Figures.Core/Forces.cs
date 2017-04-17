@@ -10,16 +10,16 @@ using MyGeometry.Core;
 
 namespace Figures.Core
 {
-	public class Forces : List<Vector>, IForces
+	public class Forces : Dictionary<string, Vector>, IForces
 	{
-		public Vector Resultant => new Vector(this.Sum(i => i.X), this.Sum(i => i.Y));
+		public Vector Resultant => new Vector(this.Sum(i => i.Value.X), this.Sum(i => i.Value.Y));
 
 		public Forces()
 		{
 		}
 
-		public Forces(IEnumerable<Vector> forces) => AddRange(forces);
+		//public Forces(IEnumerable<Vector> forces) => 
 
-		public Forces(params Vector[] forces) => AddRange(forces);
+		//public Forces(params Vector[] forces) => AddRange(forces);
 	}
 }

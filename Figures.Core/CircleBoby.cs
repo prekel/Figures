@@ -10,7 +10,7 @@ using MyGeometry.Core;
 
 namespace Figures.Core
 {
-	public class CircleBody : Circle, IMovable, ICloneable
+	public class CircleBody : Circle, IMovable, ICloneable, IFigure
 	{
 		/// <summary> Ускорение свободного падения </summary>
 		public const double g = 9.80665;
@@ -19,7 +19,7 @@ namespace Figures.Core
 		public const double G = 6.674083131e-11;
 
 		private Vector _f, _a, _v, _p, _v0, _s0, _s;
-		private double _x, _y, _r, _m, _μ, _fr, _kv, _pt;
+		private double _x, _y, _r, _m, _μ = 0.1, _fr, _kv, _pt;
 
 		/// <summary> Номер </summary>
 		public int Number { get; set; }
@@ -34,7 +34,8 @@ namespace Figures.Core
 		public double Mu { get { return _μ; } set { _μ = value; } }
 
 		/// <summary> Трение </summary>
-		public double Friction { get { return _fr; } set { _fr = value; } }
+		//public double Friction { get { return _fr; } set { _fr = value; } }
+		public Vector Friction { get; set; } = new Vector();
 
 		/// <summary> Коэффициент скорости </summary>
 		public double KV { get { return _kv; } set { _kv = value; } }
@@ -121,8 +122,11 @@ namespace Figures.Core
 				GravityForces[j] = Vector.Normalize(new Vector(this, j)) * f;
 			}
 
+			//var res = (Forces.Resultant + GravityForces.Resultant + Friction);
+			var res = (Forces.Resultant + GravityForces.Resultant);// + Friction);
+			//Friction = res * -Mu;
 
-			var v2 = (Forces.Resultant + GravityForces.Resultant) * Mass * dt;
+			var v2 = (res) * dt / Mass;
 
 			//var v1 = Accelerate * dt;
 			//Velocity += v1;

@@ -76,7 +76,7 @@ namespace MyGeometry.Draw.Example
 				//p.Y += 0.01;
 				//((CircleBody)s[2]).Velocity.Y += l;
 				//((CircleBody)s[2]).Accelerate.Y += l;
-				((CircleBody)s[2]).Forces[0].Y += l;
+				((CircleBody)s[2]).Forces["Main"].Y += l;
 			}
 			if (game.Keyboard[Key.S])
 			{
@@ -84,7 +84,7 @@ namespace MyGeometry.Draw.Example
 				//p.Y -= 0.01;
 				//((CircleBody)s[2]).Velocity.Y -= l;
 				//((CircleBody)s[2]).Accelerate.Y -= l;
-				((CircleBody)s[2]).Forces[0].Y -= l;
+				((CircleBody)s[2]).Forces["Main"].Y -= l;
 			}
 			if (game.Keyboard[Key.A])
 			{
@@ -92,7 +92,7 @@ namespace MyGeometry.Draw.Example
 				//p.X -= 0.01;
 				//((CircleBody)s[2]).Velocity.X -= l;
 				//((CircleBody)s[2]).Accelerate.X -= l;
-				((CircleBody)s[2]).Forces[0].X -= l;
+				((CircleBody)s[2]).Forces["Main"].X -= l;
 			}
 			if (game.Keyboard[Key.D])
 			{
@@ -100,7 +100,7 @@ namespace MyGeometry.Draw.Example
 				//p.X += 0.01;
 				//((CircleBody)s[2]).Velocity.X += l;
 				//((CircleBody)s[2]).Accelerate.X += l;
-				((CircleBody)s[2]).Forces[0].X += l;
+				((CircleBody)s[2]).Forces["Main"].X += l;
 			}
 			if (game.Keyboard[Key.M])
 			{
@@ -176,7 +176,16 @@ namespace MyGeometry.Draw.Example
 					var r = j.Distance(p);
 					if (r <= j.R)
 					{
-						j.Click(p, r);
+						if (e.Mouse.RightButton == ButtonState.Pressed)
+						{
+							j.Forces["Main"] = new Vector(0, 0);
+							j.Velocity = new Vector(0, 0);
+							j.GravityForces = new GravityForces();
+						}
+						else
+						{
+							j.Click(p, r);
+						}
 					}
 				}
 			}
@@ -243,7 +252,7 @@ namespace MyGeometry.Draw.Example
 				Scene = s
 			};
 
-			var cir = new CircleBody(0.1, 0.5, 0)
+			var cir = new CircleBody(0.15, 0.7, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.LightGray,
@@ -251,7 +260,10 @@ namespace MyGeometry.Draw.Example
 				ColorOutline = System.Drawing.Color.DarkGray,
 				OutlineWidth = 1,
 				Mass = 1,
-				Forces = new Forces(new Vector(0, 0)),
+				Forces = new Forces
+				{
+					["Main"] = new Vector(0, 0)
+				},
 				Scene = s
 			};
 
@@ -262,8 +274,11 @@ namespace MyGeometry.Draw.Example
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.DeepSkyBlue,
 				OutlineWidth = 3,
-				Mass = 100000,
-				Forces = new Forces(new Vector(0, 0)),
+				Mass = 2e6,
+				Forces = new Forces
+				{
+					["Main"] = new Vector(0, 0)
+				},
 				Scene = s
 			};
 
