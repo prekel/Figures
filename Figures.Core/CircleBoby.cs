@@ -119,11 +119,12 @@ namespace Figures.Core
 				if (j == this)
 					continue;
 				var f = (G * Mass * j.Mass) / DistanceSquared(j);
-				GravityForces[j] = Vector.Normalize(new Vector(this, j)) * f;
+				Forces[j.Number.ToString()] = Vector.Normalize(new Vector(this, j)) * f;
 			}
 
 			//var res = (Forces.Resultant + GravityForces.Resultant + Friction);
-			var res = (Forces.Resultant + GravityForces.Resultant);// + Friction);
+			//var res = (Forces.Resultant + GravityForces.Resultant);// + Friction);
+			var res = Forces.Resultant;
 			//Friction = res * -Mu;
 
 			var v2 = (res) * dt / Mass;

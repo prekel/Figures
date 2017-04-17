@@ -180,7 +180,7 @@ namespace MyGeometry.Draw.Example
 						{
 							j.Forces["Main"] = new Vector(0, 0);
 							j.Velocity = new Vector(0, 0);
-							j.GravityForces = new GravityForces();
+							//j.GravityForces = new GravityForces();
 						}
 						else
 						{
@@ -264,7 +264,7 @@ namespace MyGeometry.Draw.Example
 				{
 					["Main"] = new Vector(0, 0)
 				},
-				Scene = s
+				Number = 1
 			};
 
 			var bigcir = new CircleBody(0.3, 0, 0)
@@ -274,12 +274,12 @@ namespace MyGeometry.Draw.Example
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.DeepSkyBlue,
 				OutlineWidth = 3,
-				Mass = 2e6,
+				Mass = 2e8,
 				Forces = new Forces
 				{
 					["Main"] = new Vector(0, 0)
 				},
-				Scene = s
+				Number = 2
 			};
 
 			s.Add(p);
