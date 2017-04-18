@@ -252,7 +252,7 @@ namespace MyGeometry.Draw.Example
 				Scene = s
 			};
 
-			var cir = new CircleBody(0.15, 0.7, 0)
+			var cir = new CircleBody(0.06, 0.7, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.LightGray,
@@ -268,7 +268,7 @@ namespace MyGeometry.Draw.Example
 				Number = 1
 			};
 
-			var bigcir = new CircleBody(0.03, 0, 0)
+			var bigcir = new CircleBody(0.07, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.DarkSeaGreen,

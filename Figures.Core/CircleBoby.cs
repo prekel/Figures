@@ -154,7 +154,7 @@ namespace Figures.Core
 		{
 			//var v = new Vector(this, p);
 			//Velocity = -v;
-			Velocity = new Vector(p, this) * 2;
+			Velocity = new Vector(p, this) * 20;
 		}
 
 		public void Click(double x, double y, double r)
