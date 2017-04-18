@@ -210,7 +210,7 @@ namespace MyGeometry.Draw.Example
 
 		public Program()
 		{
-			game = new GameWindow(500, 500, new GraphicsMode(32, 24, 4, 1));
+			game = new GameWindow(500, 500, new GraphicsMode(32, 24, 4, 2));
 
 			game.Load += OnGameOnLoad;
 
@@ -268,7 +268,7 @@ namespace MyGeometry.Draw.Example
 				Number = 1
 			};
 
-			var bigcir = new CircleBody(0.3, 0, 0)
+			var bigcir = new CircleBody(0.03, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.DarkSeaGreen,

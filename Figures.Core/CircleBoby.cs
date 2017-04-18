@@ -145,6 +145,8 @@ namespace Figures.Core
 			//var v1 = Accelerate * dt;
 			//Velocity += v1;
 			Velocity += v2;
+			if (Velocity.X != 0 && Velocity.Y != 0)
+				Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 100;
 			Move(Velocity * dt);
 		}
 
@@ -152,8 +154,7 @@ namespace Figures.Core
 		{
 			//var v = new Vector(this, p);
 			//Velocity = -v;
-			Velocity = new Vector(p, this);
-			Friction = -Velocity * Mu;
+			Velocity = new Vector(p, this) * 2;
 		}
 
 		public void Click(double x, double y, double r)
