@@ -210,7 +210,7 @@ namespace MyGeometry.Draw.Example
 
 		public Program()
 		{
-			game = new GameWindow(500, 500, new GraphicsMode(32, 24, 4, 2));
+			game = new GameWindow(500, 500, new GraphicsMode(32, 24, 4, 1));
 
 			game.Load += OnGameOnLoad;
 
@@ -241,9 +241,9 @@ namespace MyGeometry.Draw.Example
 			var pol = new Polygon(4)
 			{
 				[0] = new Point(0.5, 0.5),
-				[1] = new Point(-0.4, 0.5),
-				[2] = new Point(-0.3, -0.5),
-				[3] = new Point(0.5, -0.4),
+				[1] = new Point(-0.5, 0.5),
+				[2] = new Point(-0.5, -0.5),
+				[3] = new Point(0.5, -0.5),
 				OutlineWidth = 2,
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.Navy,
@@ -252,7 +252,7 @@ namespace MyGeometry.Draw.Example
 				Scene = s
 			};
 
-			var cir = new CircleBody(0.06, 0.7, 0)
+			var cir = new CircleBody(0.1, 0.8, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.LightGray,
@@ -263,23 +263,23 @@ namespace MyGeometry.Draw.Example
 				Forces = new Forces
 				{
 					["Main"] = new Vector(0, 0),
-					["Friction"] = new Vector(0, 0)
+					//["Friction"] = new Vector(0, 0)
 				},
 				Number = 1
 			};
 
-			var bigcir = new CircleBody(0.07, 0, 0)
+			var bigcir = new CircleBody(0.03, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.DarkSeaGreen,
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.DeepSkyBlue,
 				OutlineWidth = 3,
-				Mass = 2e8,
+				Mass = 10e8,
 				Forces = new Forces
 				{
 					["Main"] = new Vector(0, 0),
-					["Friction"] = new Vector(0, 0)
+					//["Friction"] = new Vector(0, 0)
 				},
 				Number = 2
 			};
