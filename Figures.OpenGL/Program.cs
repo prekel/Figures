@@ -262,7 +262,8 @@ namespace MyGeometry.Draw.Example
 				Mass = 1,
 				Forces = new Forces
 				{
-					["Main"] = new Vector(0, 0)
+					["Main"] = new Vector(0, 0),
+					["Friction"] = new Vector(0, 0)
 				},
 				Number = 1
 			};
@@ -277,7 +278,8 @@ namespace MyGeometry.Draw.Example
 				Mass = 2e8,
 				Forces = new Forces
 				{
-					["Main"] = new Vector(0, 0)
+					["Main"] = new Vector(0, 0),
+					["Friction"] = new Vector(0, 0)
 				},
 				Number = 2
 			};

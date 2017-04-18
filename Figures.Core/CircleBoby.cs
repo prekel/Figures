@@ -20,22 +20,14 @@ namespace Figures.Core
 
 		private Vector _f, _a, _v, _p, _v0, _s0, _s;
 		private double _x, _y, _r, _m, _μ = 0.1, _fr, _kv, _pt;
-
-		/// <summary> Номер </summary>
-		public int Number { get; set; }
-
-		/// <summary> Масcа </summary>
-		public double Mass { get { return _m; } set { _m = value; } }
+		
+		#region Others
 
 		/// <summary> Радиус </summary>
 		public double Radius { get { return _r; } set { _r = value; } }
 
 		/// <summary> Коэффициент трения </summary>
 		public double Mu { get { return _μ; } set { _μ = value; } }
-
-		/// <summary> Трение </summary>
-		//public double Friction { get { return _fr; } set { _fr = value; } }
-		public Vector Friction { get; set; } = new Vector();
 
 		/// <summary> Коэффициент скорости </summary>
 		public double KV { get { return _kv; } set { _kv = value; } }
@@ -63,6 +55,27 @@ namespace Figures.Core
 
 		/// <summary> Вектор перемещения </summary>
 		public Vector Shift { get { return _s; } set { _s = value; } }
+
+		#endregion
+
+		/// <summary> Номер </summary>
+		public int Number { get; set; }
+
+		/// <summary> Масcа </summary>
+		//public double Mass { get { return _m; } set { _m = value; } }
+		public double Mass { get; set; }
+
+		/// <summary> Трение </summary>
+		public Vector Friction
+		{
+			get
+			{
+				if (!Forces.ContainsKey("Friction"))
+					Forces.Add("Friction", new Vector(0, 0));
+				return Forces["Friction"];
+			}
+			set => Forces["Friction"] = value;
+		}
 
 		public Forces Forces { get; set; } = new Forces();
 
@@ -140,6 +153,7 @@ namespace Figures.Core
 			//var v = new Vector(this, p);
 			//Velocity = -v;
 			Velocity = new Vector(p, this);
+			Friction = -Velocity * Mu;
 		}
 
 		public void Click(double x, double y, double r)
