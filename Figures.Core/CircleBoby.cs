@@ -150,7 +150,7 @@ namespace Figures.Core
 
 				if (b.Momentum.LengthSquared == 0)
 					continue;
-				var m2 = (b.X - X) * (b.X - X) + (b.Y - Y) * (b.Y - Y);
+				var m2 = DistanceSquared(b);
 				var r = b.R + R;
 				var r2 = r * r;
 				if (m2 > r2)
@@ -174,7 +174,10 @@ namespace Figures.Core
 				//m *= b.Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(b.Momentum, m) * 180 / Math.PI));
 				m *= b.Momentum.Length * Math.Abs(Vector.CosBetween(b.Momentum, m));
 
-				b.Momentum = b.Momentum - m;
+				//b.Momentum = b.Momentum - m;
+				//Momentum = m;
+
+				//b.Momentum = b.Momentum - m;
 				Momentum = m;
 			}
 
