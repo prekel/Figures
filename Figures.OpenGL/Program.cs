@@ -125,8 +125,8 @@ namespace MyGeometry.Draw.Example
 
 			for (var i = 0; i < k; i++)
 			{
-				listX[i] = r * Math.Cos(c + 2 * Math.PI / k * i);
-				listY[i] = r * Math.Sin(c + 2 * Math.PI / k * i);
+				//listX[i] = r * Math.Cos(c + 2 * Math.PI / k * i);
+				//listY[i] = r * Math.Sin(c + 2 * Math.PI / k * i);
 				//pol[i].X = r * Math.Cos(c + 2 * Math.PI / k * i);
 				//pol[i].Y = r * Math.Sin(c + 2 * Math.PI / k * i);
 			}
@@ -232,12 +232,12 @@ namespace MyGeometry.Draw.Example
 
 			game.RenderFrame += OnGameOnRenderFrame;
 
-			game.MouseMove += OnGameMouseMove;
+			//game.MouseMove += OnGameMouseMove;
 
 			game.MouseDown += OnMouseDown;
 
-			t = new Stopwatch();
-			t.Start();
+			//t = new Stopwatch();
+			//t.Start();
 
 			s = new DrawScene();
 
@@ -296,13 +296,13 @@ namespace MyGeometry.Draw.Example
 				Number = 2
 			};
 
-			var c1 = new CircleBody(0.2, -0.8, 0)
+			var c1 = new CircleBody(0.20001, -0.8, 0)
 			{
-				IsFill = true,
+				IsFill = false,
 				ColorFill = System.Drawing.Color.LightGray,
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.DarkGray,
-				OutlineWidth = 1,
+				OutlineWidth = 4,
 				Mass = 1,
 				Forces = new Forces
 				{
@@ -312,13 +312,13 @@ namespace MyGeometry.Draw.Example
 				Number = 1
 			};
 
-			var c2 = new CircleBody(0.2, 0.8, 0)
+			var c2 = new CircleBody(0.20002, 0.8, 0)
 			{
-				IsFill = true,
+				IsFill = false,
 				ColorFill = System.Drawing.Color.DarkSeaGreen,
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.DeepSkyBlue,
-				OutlineWidth = 1,
+				OutlineWidth = 4,
 				Mass = 1,
 				Forces = new Forces
 				{

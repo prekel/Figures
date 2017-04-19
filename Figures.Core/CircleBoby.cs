@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 
 using MyGeometry.Core;
 
+using NLog;
+
 namespace Figures.Core
 {
 	public class CircleBody : Circle, IMovable, ICloneable, IFigure
 	{
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
 		/// <summary> Ускорение свободного падения </summary>
 		public const double g = 9.80665;
 
@@ -157,7 +161,7 @@ namespace Figures.Core
 				var r = b.R + R;
 				var r2 = r * r;
 
-				if (m2 >= r2)
+				if (m2 > r2)
 					continue;
 
 				//var vb = new Vector(X - b.X, Y - b.Y);
@@ -165,6 +169,10 @@ namespace Figures.Core
 				//vb *= Math.Sqrt(m2) - r;
 
 				var m = new Vector(this, b);
+
+				Log.Trace(this);
+				Log.Trace(b);
+
 				//b.X += vb.X;
 				//b.Y += vb.Y; 
 
@@ -176,6 +184,8 @@ namespace Figures.Core
 
 				//m *= b.Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(b.Momentum, m) * 180 / Math.PI));
 				m *= b.Momentum.Length * Math.Abs(Vector.CosBetween(b.Momentum, m));
+
+				Log.Trace(m);
 
 				//b.Momentum = b.Momentum - m;
 				//Momentum = m;
