@@ -44,8 +44,8 @@ namespace Figures.Core
 		/// <summary> Вектор скорости </summary>
 		public Vector Velocity { get { return _v; } set { _v = value; } }
 
-		/// <summary> Вектор импульса </summary>
-		public Vector Momentum { get { return _p; } set { _p = value; } }
+		///// <summary> Вектор импульса </summary>
+		//public Vector Momentum { get { return _p; } set { _p = value; } }
 
 		/// <summary> Вектор начальной скорости </summary>
 		public Vector Velocity0 { get { return _v0; } set { _v0 = value; } }
@@ -74,7 +74,7 @@ namespace Figures.Core
 					Forces.Add("Friction", new Vector(0, 0));
 				return Forces["Friction"];
 			}
-			set { Forces["Friction"] = value; }
+			set => Forces["Friction"] = value;
 		}
 
 		public Forces Forces { get; set; } = new Forces();
@@ -83,12 +83,18 @@ namespace Figures.Core
 
 		public Vector DVelocity { get; set; } = new Vector();
 
+		public Vector Momentum
+		{
+			get => Velocity * Mass;
+			set => Velocity = value / Mass;
+		}
+
 		private void Init()
 		{
 			Force = new Vector();
 			Accelerate = new Vector();
 			Velocity = new Vector();
-			Momentum = new Vector();
+			//Momentum = new Vector();
 			Velocity0 = new Vector();
 			Shift0 = new Vector();
 			Shift = new Vector();
@@ -135,11 +141,41 @@ namespace Figures.Core
 			{
 				if (!(i is CircleBody))
 					continue;
-				var j = (CircleBody)i;
-				if (j == this)
+				var b = (CircleBody)i;
+				if (b == this)
 					continue;
-				var f = (G * Mass * j.Mass) / DistanceSquared(j);
-				Forces[j.Number.ToString()] = Vector.Normalize(new Vector(this, j)) * f;
+				var f = (G * Mass * b.Mass) / DistanceSquared(b);
+				Forces["Gravity " + b.Number.ToString()] = Vector.Normalize(new Vector(this, b)) * f;
+
+
+				if (b.Momentum.LengthSquared == 0)
+					continue;
+				var m2 = (b.X - X) * (b.X - X) + (b.Y - Y) * (b.Y - Y);
+				var r = b.R + R;
+				var r2 = r * r;
+				if (m2 > r2)
+					continue;
+
+				var vb = new Vector(X - b.X, Y - b.Y);
+				vb.Normalize();
+				vb *= Math.Sqrt(m2) - r;
+				//Debug.WriteLine(b.Number + " " + body.Number + " " + FPS.ActualSumTime + " " + FPS.ActualTime + " " + ds + " " + Math.Sqrt(m2));
+				//Debug.WriteLine(b.Momentum + " " + body.Momentum + " " + vb);
+				var m = new Vector(X - b.X, Y - b.Y);
+				//b.X += vb.X;
+				//b.Y += vb.Y; 
+
+				//var temp = m;
+				//temp.Normalize();
+				//m = temp;
+
+				m.Normalize();
+
+				//m *= b.Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(b.Momentum, m) * 180 / Math.PI));
+				m *= b.Momentum.Length * Math.Abs(Vector.CosBetween(b.Momentum, m));
+
+				b.Momentum = b.Momentum - m;
+				Momentum = m;
 			}
 
 			//var res = (Forces.Resultant + GravityForces.Resultant + Friction);

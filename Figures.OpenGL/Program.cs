@@ -115,7 +115,7 @@ namespace MyGeometry.Draw.Example
 			Cir.Step(game.UpdatePeriod);
 			BigCir.Step(game.UpdatePeriod);
 			Cir.Move();
-			Cir.Move();
+			BigCir.Move();
 
 			for (var i = 0; i < k; i++)
 			{
@@ -255,7 +255,7 @@ namespace MyGeometry.Draw.Example
 				Scene = s
 			};
 
-			Cir = new CircleBody(0.1, 0.8, 0)
+			var cir = new CircleBody(0.1, 0.8, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.LightGray,
@@ -271,7 +271,7 @@ namespace MyGeometry.Draw.Example
 				Number = 1
 			};
 
-			BigCir = new CircleBody(0.03, 0, 0)
+			var bc = new CircleBody(0.03, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.DarkSeaGreen,
@@ -286,6 +286,41 @@ namespace MyGeometry.Draw.Example
 				},
 				Number = 2
 			};
+
+			var c1 = new CircleBody(0.2, -0.8, 0)
+			{
+				IsFill = true,
+				ColorFill = System.Drawing.Color.LightGray,
+				IsOutline = true,
+				ColorOutline = System.Drawing.Color.DarkGray,
+				OutlineWidth = 1,
+				Mass = 1,
+				Forces = new Forces
+				{
+					["Main"] = new Vector(0, 0),
+					//["Friction"] = new Vector(0, 0)
+				},
+				Number = 1
+			};
+
+			var c2 = new CircleBody(0.2, 0.8, 0)
+			{
+				IsFill = true,
+				ColorFill = System.Drawing.Color.DarkSeaGreen,
+				IsOutline = true,
+				ColorOutline = System.Drawing.Color.DeepSkyBlue,
+				OutlineWidth = 1,
+				Mass = 1,
+				Forces = new Forces
+				{
+					["Main"] = new Vector(0, 0),
+					//["Friction"] = new Vector(0, 0)
+				},
+				Number = 2
+			};
+
+			Cir = c1;
+			BigCir = c2;
 
 			s.Add(p);
 			s.Add(pol);
