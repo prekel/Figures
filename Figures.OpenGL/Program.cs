@@ -17,10 +17,14 @@ using MyGeometry.Draw;
 
 using Figures.Core;
 
+using NLog;
+
 namespace MyGeometry.Draw.Example
 {
 	public class Program
 	{
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
 		private GameWindow game;
 		private readonly Stopwatch t;
 		public double l = 0.01;
@@ -33,6 +37,7 @@ namespace MyGeometry.Draw.Example
 		double x, y;
 		double rotate_x, rotate_y;
 		DrawScene s;
+		CircleBody Cir, BigCir;
 
 		private void OnGameOnLoad(object sender, EventArgs e)
 		{
@@ -76,7 +81,7 @@ namespace MyGeometry.Draw.Example
 				//p.Y += 0.01;
 				//((CircleBody)s[2]).Velocity.Y += l;
 				//((CircleBody)s[2]).Accelerate.Y += l;
-				((CircleBody)s[2]).Forces["Main"].Y += l;
+				Cir.Forces["Main"].Y += l;
 			}
 			if (game.Keyboard[Key.S])
 			{
@@ -84,7 +89,7 @@ namespace MyGeometry.Draw.Example
 				//p.Y -= 0.01;
 				//((CircleBody)s[2]).Velocity.Y -= l;
 				//((CircleBody)s[2]).Accelerate.Y -= l;
-				((CircleBody)s[2]).Forces["Main"].Y -= l;
+				Cir.Forces["Main"].Y -= l;
 			}
 			if (game.Keyboard[Key.A])
 			{
@@ -92,7 +97,7 @@ namespace MyGeometry.Draw.Example
 				//p.X -= 0.01;
 				//((CircleBody)s[2]).Velocity.X -= l;
 				//((CircleBody)s[2]).Accelerate.X -= l;
-				((CircleBody)s[2]).Forces["Main"].X -= l;
+				Cir.Forces["Main"].X -= l;
 			}
 			if (game.Keyboard[Key.D])
 			{
@@ -100,7 +105,7 @@ namespace MyGeometry.Draw.Example
 				//p.X += 0.01;
 				//((CircleBody)s[2]).Velocity.X += l;
 				//((CircleBody)s[2]).Accelerate.X += l;
-				((CircleBody)s[2]).Forces["Main"].X += l;
+				Cir.Forces["Main"].X += l;
 			}
 			if (game.Keyboard[Key.M])
 			{
@@ -111,13 +116,17 @@ namespace MyGeometry.Draw.Example
 				l -= 0.0001; //p.Size -= 0.1f;
 			}
 
-			((CircleBody)s[2]).Step(game.UpdatePeriod);
-			((CircleBody)s[3]).Step(game.UpdatePeriod);
+			Cir.Step0();
+			BigCir.Step0();
+			Cir.Step(game.UpdatePeriod);
+			BigCir.Step(game.UpdatePeriod);
+			Cir.Move();
+			BigCir.Move();
 
 			for (var i = 0; i < k; i++)
 			{
-				listX[i] = r * Math.Cos(c + 2 * Math.PI / k * i);
-				listY[i] = r * Math.Sin(c + 2 * Math.PI / k * i);
+				//listX[i] = r * Math.Cos(c + 2 * Math.PI / k * i);
+				//listY[i] = r * Math.Sin(c + 2 * Math.PI / k * i);
 				//pol[i].X = r * Math.Cos(c + 2 * Math.PI / k * i);
 				//pol[i].Y = r * Math.Sin(c + 2 * Math.PI / k * i);
 			}
@@ -210,7 +219,10 @@ namespace MyGeometry.Draw.Example
 
 		public Program()
 		{
-			game = new GameWindow(500, 500, new GraphicsMode(32, 24, 4, 1));
+			var starttime = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ffff");
+			LogManager.Configuration.Variables["starttime"] = starttime;
+
+			game = new GameWindow(700, 700, new GraphicsMode(32, 24, 4, 1));
 
 			game.Load += OnGameOnLoad;
 
@@ -220,12 +232,12 @@ namespace MyGeometry.Draw.Example
 
 			game.RenderFrame += OnGameOnRenderFrame;
 
-			game.MouseMove += OnGameMouseMove;
+			//game.MouseMove += OnGameMouseMove;
 
 			game.MouseDown += OnMouseDown;
 
-			t = new Stopwatch();
-			t.Start();
+			//t = new Stopwatch();
+			//t.Start();
 
 			s = new DrawScene();
 
@@ -241,9 +253,9 @@ namespace MyGeometry.Draw.Example
 			var pol = new Polygon(4)
 			{
 				[0] = new Point(0.5, 0.5),
-				[1] = new Point(-0.4, 0.5),
-				[2] = new Point(-0.3, -0.5),
-				[3] = new Point(0.5, -0.4),
+				[1] = new Point(-0.5, 0.5),
+				[2] = new Point(-0.5, -0.5),
+				[3] = new Point(0.5, -0.5),
 				OutlineWidth = 2,
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.Navy,
@@ -252,7 +264,7 @@ namespace MyGeometry.Draw.Example
 				Scene = s
 			};
 
-			var cir = new CircleBody(0.15, 0.7, 0)
+			var cir = new CircleBody(0.1, 0.8, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.LightGray,
@@ -262,30 +274,69 @@ namespace MyGeometry.Draw.Example
 				Mass = 1,
 				Forces = new Forces
 				{
-					["Main"] = new Vector(0, 0)
+					["Main"] = new Vector(0, 0),
+					//["Friction"] = new Vector(0, 0)
 				},
 				Number = 1
 			};
 
-			var bigcir = new CircleBody(0.3, 0, 0)
+			var bc = new CircleBody(0.03, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.DarkSeaGreen,
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.DeepSkyBlue,
 				OutlineWidth = 3,
-				Mass = 2e8,
+				Mass = 10e8,
 				Forces = new Forces
 				{
-					["Main"] = new Vector(0, 0)
+					["Main"] = new Vector(0, 0),
+					//["Friction"] = new Vector(0, 0)
 				},
 				Number = 2
 			};
 
+			var c1 = new CircleBody(0.20001, -0.8, 0)
+			{
+				IsFill = false,
+				ColorFill = System.Drawing.Color.LightGray,
+				IsOutline = true,
+				ColorOutline = System.Drawing.Color.DarkGray,
+				OutlineWidth = 4,
+				Mass = 1,
+				Forces = new Forces
+				{
+					["Main"] = new Vector(0, 0),
+					//["Friction"] = new Vector(0, 0)
+				},
+				Number = 1
+			};
+
+			var c2 = new CircleBody(0.20002, 0.8, 0)
+			{
+				IsFill = false,
+				ColorFill = System.Drawing.Color.DarkSeaGreen,
+				IsOutline = true,
+				ColorOutline = System.Drawing.Color.DeepSkyBlue,
+				OutlineWidth = 4,
+				Mass = 1,
+				Forces = new Forces
+				{
+					["Main"] = new Vector(0, 0),
+					//["Friction"] = new Vector(0, 0)
+				},
+				Number = 2
+			};
+
+			Cir = c1;
+			BigCir = c2;
+			//Cir = cir;
+			//BigCir = bc;
+
 			s.Add(p);
 			s.Add(pol);
-			s.Add(cir);
-			s.Add(bigcir);
+			s.Add(Cir);
+			s.Add(BigCir);
 
 			s.Left *= 1;
 			s.Right *= 1;
