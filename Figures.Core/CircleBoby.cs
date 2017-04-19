@@ -89,6 +89,8 @@ namespace Figures.Core
 			set => Velocity = value / Mass;
 		}
 
+		public Vector NextMomentum { get; set; }
+
 		private void Init()
 		{
 			Force = new Vector();
@@ -135,7 +137,7 @@ namespace Figures.Core
 			Move(Velocity);
 		}
 
-		public void Step(double dt)
+		public void Step0()
 		{
 			foreach (var i in Scene)
 			{
@@ -144,24 +146,25 @@ namespace Figures.Core
 				var b = (CircleBody)i;
 				if (b == this)
 					continue;
-				var f = (G * Mass * b.Mass) / DistanceSquared(b);
-				Forces["Gravity " + b.Number.ToString()] = Vector.Normalize(new Vector(this, b)) * f;
 
+				var m2 = DistanceSquared(b);
+				var f = (G * Mass * b.Mass) / m2;
+				Forces["Gravity " + b.Number.ToString()] = Vector.Normalize(new Vector(this, b)) * f;
 
 				if (b.Momentum.LengthSquared == 0)
 					continue;
-				var m2 = DistanceSquared(b);
+
 				var r = b.R + R;
 				var r2 = r * r;
-				if (m2 > r2)
+
+				if (m2 >= r2)
 					continue;
 
-				var vb = new Vector(X - b.X, Y - b.Y);
-				vb.Normalize();
-				vb *= Math.Sqrt(m2) - r;
-				//Debug.WriteLine(b.Number + " " + body.Number + " " + FPS.ActualSumTime + " " + FPS.ActualTime + " " + ds + " " + Math.Sqrt(m2));
-				//Debug.WriteLine(b.Momentum + " " + body.Momentum + " " + vb);
-				var m = new Vector(X - b.X, Y - b.Y);
+				//var vb = new Vector(X - b.X, Y - b.Y);
+				//vb.Normalize();
+				//vb *= Math.Sqrt(m2) - r;
+
+				var m = new Vector(this, b);
 				//b.X += vb.X;
 				//b.Y += vb.Y; 
 
@@ -178,8 +181,14 @@ namespace Figures.Core
 				//Momentum = m;
 
 				//b.Momentum = b.Momentum - m;
-				Momentum = m;
+				NextMomentum = -m;
 			}
+		}
+
+		public void Step(double dt)
+		{
+			Momentum = NextMomentum ?? Momentum;
+			NextMomentum = null;
 
 			//var res = (Forces.Resultant + GravityForces.Resultant + Friction);
 			//var res = (Forces.Resultant + GravityForces.Resultant);// + Friction);
@@ -191,8 +200,8 @@ namespace Figures.Core
 			//var v1 = Accelerate * dt;
 			//Velocity += v1;
 			Velocity += v2;
-			//if (Velocity.X != 0 && Velocity.Y != 0)
-			//	Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 100;
+			if (Velocity.X != 0 && Velocity.Y != 0)
+				Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 100;
 			DVelocity = Velocity * dt;
 			//Move(Velocity * dt);
 		}

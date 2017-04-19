@@ -112,6 +112,8 @@ namespace MyGeometry.Draw.Example
 				l -= 0.0001; //p.Size -= 0.1f;
 			}
 
+			Cir.Step0();
+			BigCir.Step0();
 			Cir.Step(game.UpdatePeriod);
 			BigCir.Step(game.UpdatePeriod);
 			Cir.Move();
@@ -213,7 +215,7 @@ namespace MyGeometry.Draw.Example
 
 		public Program()
 		{
-			game = new GameWindow(500, 500, new GraphicsMode(32, 24, 4, 1));
+			game = new GameWindow(700, 700, new GraphicsMode(32, 24, 4, 1));
 
 			game.Load += OnGameOnLoad;
 
@@ -321,6 +323,8 @@ namespace MyGeometry.Draw.Example
 
 			Cir = c1;
 			BigCir = c2;
+			//Cir = cir;
+			//BigCir = bc;
 
 			s.Add(p);
 			s.Add(pol);
