@@ -17,10 +17,14 @@ using MyGeometry.Draw;
 
 using Figures.Core;
 
+using NLog;
+
 namespace MyGeometry.Draw.Example
 {
 	public class Program
 	{
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
 		private GameWindow game;
 		private readonly Stopwatch t;
 		public double l = 0.01;
@@ -215,6 +219,9 @@ namespace MyGeometry.Draw.Example
 
 		public Program()
 		{
+			var starttime = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ffff");
+			LogManager.Configuration.Variables["starttime"] = starttime;
+
 			game = new GameWindow(700, 700, new GraphicsMode(32, 24, 4, 1));
 
 			game.Load += OnGameOnLoad;
