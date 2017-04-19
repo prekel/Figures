@@ -33,6 +33,7 @@ namespace MyGeometry.Draw.Example
 		double x, y;
 		double rotate_x, rotate_y;
 		DrawScene s;
+		CircleBody Cir, BigCir;
 
 		private void OnGameOnLoad(object sender, EventArgs e)
 		{
@@ -76,7 +77,7 @@ namespace MyGeometry.Draw.Example
 				//p.Y += 0.01;
 				//((CircleBody)s[2]).Velocity.Y += l;
 				//((CircleBody)s[2]).Accelerate.Y += l;
-				((CircleBody)s[2]).Forces["Main"].Y += l;
+				Cir.Forces["Main"].Y += l;
 			}
 			if (game.Keyboard[Key.S])
 			{
@@ -84,7 +85,7 @@ namespace MyGeometry.Draw.Example
 				//p.Y -= 0.01;
 				//((CircleBody)s[2]).Velocity.Y -= l;
 				//((CircleBody)s[2]).Accelerate.Y -= l;
-				((CircleBody)s[2]).Forces["Main"].Y -= l;
+				Cir.Forces["Main"].Y -= l;
 			}
 			if (game.Keyboard[Key.A])
 			{
@@ -92,7 +93,7 @@ namespace MyGeometry.Draw.Example
 				//p.X -= 0.01;
 				//((CircleBody)s[2]).Velocity.X -= l;
 				//((CircleBody)s[2]).Accelerate.X -= l;
-				((CircleBody)s[2]).Forces["Main"].X -= l;
+				Cir.Forces["Main"].X -= l;
 			}
 			if (game.Keyboard[Key.D])
 			{
@@ -100,7 +101,7 @@ namespace MyGeometry.Draw.Example
 				//p.X += 0.01;
 				//((CircleBody)s[2]).Velocity.X += l;
 				//((CircleBody)s[2]).Accelerate.X += l;
-				((CircleBody)s[2]).Forces["Main"].X += l;
+				Cir.Forces["Main"].X += l;
 			}
 			if (game.Keyboard[Key.M])
 			{
@@ -111,8 +112,10 @@ namespace MyGeometry.Draw.Example
 				l -= 0.0001; //p.Size -= 0.1f;
 			}
 
-			((CircleBody)s[2]).Step(game.UpdatePeriod);
-			((CircleBody)s[3]).Step(game.UpdatePeriod);
+			Cir.Step(game.UpdatePeriod);
+			BigCir.Step(game.UpdatePeriod);
+			Cir.Move();
+			Cir.Move();
 
 			for (var i = 0; i < k; i++)
 			{
@@ -252,7 +255,7 @@ namespace MyGeometry.Draw.Example
 				Scene = s
 			};
 
-			var cir = new CircleBody(0.1, 0.8, 0)
+			Cir = new CircleBody(0.1, 0.8, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.LightGray,
@@ -268,7 +271,7 @@ namespace MyGeometry.Draw.Example
 				Number = 1
 			};
 
-			var bigcir = new CircleBody(0.03, 0, 0)
+			BigCir = new CircleBody(0.03, 0, 0)
 			{
 				IsFill = true,
 				ColorFill = System.Drawing.Color.DarkSeaGreen,
@@ -286,8 +289,8 @@ namespace MyGeometry.Draw.Example
 
 			s.Add(p);
 			s.Add(pol);
-			s.Add(cir);
-			s.Add(bigcir);
+			s.Add(Cir);
+			s.Add(BigCir);
 
 			s.Left *= 1;
 			s.Right *= 1;

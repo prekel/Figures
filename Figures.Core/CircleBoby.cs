@@ -81,6 +81,8 @@ namespace Figures.Core
 
 		public GravityForces GravityForces { get; set; } = new GravityForces();
 
+		public Vector DVelocity { get; set; } = new Vector();
+
 		private void Init()
 		{
 			Force = new Vector();
@@ -117,6 +119,11 @@ namespace Figures.Core
 			base.Move(v);
 		}
 
+		public void Move()
+		{
+			base.Move(DVelocity);
+		}
+
 		public void Step()
 		{
 			Move(Velocity);
@@ -147,7 +154,8 @@ namespace Figures.Core
 			Velocity += v2;
 			//if (Velocity.X != 0 && Velocity.Y != 0)
 			//	Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 100;
-			Move(Velocity * dt);
+			DVelocity = Velocity * dt;
+			//Move(Velocity * dt);
 		}
 
 		public void Click(Point p, double r)
