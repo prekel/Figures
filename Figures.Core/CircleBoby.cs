@@ -20,7 +20,7 @@ namespace Figures.Core
 
 		private Vector _f, _a, _v, _p, _v0, _s0, _s;
 		private double _x, _y, _r, _m, _μ = 0.1, _fr, _kv, _pt;
-		
+
 		#region Others
 
 		/// <summary> Радиус </summary>
@@ -74,7 +74,7 @@ namespace Figures.Core
 					Forces.Add("Friction", new Vector(0, 0));
 				return Forces["Friction"];
 			}
-			set => Forces["Friction"] = value;
+			set { Forces["Friction"] = value; }
 		}
 
 		public Forces Forces { get; set; } = new Forces();
@@ -154,7 +154,7 @@ namespace Figures.Core
 		{
 			//var v = new Vector(this, p);
 			//Velocity = -v;
-			Velocity = new Vector(p, this) * 20;
+			Velocity = new Vector(p, this) * 4;
 		}
 
 		public void Click(double x, double y, double r)
