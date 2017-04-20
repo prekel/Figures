@@ -155,11 +155,25 @@ namespace Figures.Core
 				var f = (G * Mass * b.Mass) / m2;
 				Forces["Gravity " + b.Number.ToString()] = Vector.Normalize(new Vector(this, b)) * f;
 
-				if (b.Momentum.LengthSquared == 0)
-					continue;
-
 				var r = b.R + R;
 				var r2 = r * r;
+
+				//if (m2 > r2)
+				if (Distance(b) > b.R + R)
+					NextMomentum = null;
+
+
+				if (NextMomentum != null)
+					continue;
+
+
+				if (Momentum.LengthSquared < b.Momentum.LengthSquared)
+					continue;
+
+
+				//if (b.Momentum.LengthSquared == 0)
+				//	continue;
+
 
 				if (m2 > r2)
 					continue;
@@ -170,8 +184,8 @@ namespace Figures.Core
 
 				var m = new Vector(this, b);
 
-				Log.Trace(this);
-				Log.Trace(b);
+				//Log.Trace(this);
+				//Log.Trace(b);
 
 				//b.X += vb.X;
 				//b.Y += vb.Y; 
@@ -183,22 +197,25 @@ namespace Figures.Core
 				m.Normalize();
 
 				//m *= b.Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(b.Momentum, m) * 180 / Math.PI));
-				m *= b.Momentum.Length * Math.Abs(Vector.CosBetween(b.Momentum, m));
+				m *= Momentum.Length * Math.Abs(Vector.CosBetween(b.Momentum, m));
 
-				Log.Trace(m);
+				//Log.Trace(m);
 
 				//b.Momentum = b.Momentum - m;
 				//Momentum = m;
 
 				//b.Momentum = b.Momentum - m;
-				NextMomentum = -m;
+
+				b.NextMomentum = m;
+				NextMomentum = Momentum - m;
+				//Momentum = -m;
 			}
 		}
 
 		public void Step(double dt)
 		{
 			Momentum = NextMomentum ?? Momentum;
-			NextMomentum = null;
+			//NextMomentum = null;
 
 			//var res = (Forces.Resultant + GravityForces.Resultant + Friction);
 			//var res = (Forces.Resultant + GravityForces.Resultant);// + Friction);
@@ -211,7 +228,7 @@ namespace Figures.Core
 			//Velocity += v1;
 			Velocity += v2;
 			if (Velocity.X != 0 && Velocity.Y != 0)
-				Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 100;
+				Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 10;
 			DVelocity = Velocity * dt;
 			//Move(Velocity * dt);
 		}

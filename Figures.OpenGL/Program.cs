@@ -347,7 +347,8 @@ namespace MyGeometry.Draw.Example
 			listY = new double[k];
 
 			//game.Run(60, 60);
-			game.Run(200);//, 200);
+			//game.Run(200);//, 200);
+			game.Run(150);//, 200);
 		}
 
 		private void OnGameMouseMove(object sender, MouseMoveEventArgs e)
