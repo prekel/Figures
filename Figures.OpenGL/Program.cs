@@ -52,10 +52,7 @@ namespace MyGeometry.Draw.Example
 			GL.ClearColor(System.Drawing.Color.White);
 		}
 
-		private void OnGameOnResize(object sender, EventArgs e)
-		{
-			GL.Viewport(0, 0, game.Width, game.Height);
-		}
+		private void OnGameOnResize(object sender, EventArgs e) => GL.Viewport(0, 0, game.Width, game.Height);
 
 		private void OnGameOnUpdateFrame(object sender, FrameEventArgs e)
 		{
