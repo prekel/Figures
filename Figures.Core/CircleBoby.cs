@@ -161,11 +161,9 @@ namespace Figures.Core
 				//if (m2 > r2)
 				if (Distance(b) > b.R + R)
 					NextMomentum = null;
-
-
-				if (NextMomentum != null)
-					continue;
-
+					
+				//if (NextMomentum != null)
+				//	continue;
 
 				if (Momentum.LengthSquared < b.Momentum.LengthSquared)
 					continue;
@@ -175,7 +173,8 @@ namespace Figures.Core
 				//	continue;
 
 
-				if (m2 > r2)
+				//if (m2 > r2
+				if (Distance(b) > b.R + R)
 					continue;
 
 				//var vb = new Vector(X - b.X, Y - b.Y);
@@ -197,7 +196,7 @@ namespace Figures.Core
 				m.Normalize();
 
 				//m *= b.Momentum.Length * Math.Abs(Math.Cos(Vector.AngleBetween(b.Momentum, m) * 180 / Math.PI));
-				m *= Momentum.Length * Math.Abs(Vector.CosBetween(b.Momentum, m));
+				m *= (Momentum.Length - b.Momentum.Length) * Math.Abs(Vector.CosBetween(b.Momentum, m));
 
 				//Log.Trace(m);
 
@@ -207,8 +206,11 @@ namespace Figures.Core
 				//b.Momentum = b.Momentum - m;
 
 				b.NextMomentum = m;
-				NextMomentum = Momentum - m;
+				//b.NextMomentum = null;
+				NextMomentum = -m;
 				//Momentum = -m;
+
+
 			}
 		}
 
@@ -228,7 +230,7 @@ namespace Figures.Core
 			//Velocity += v1;
 			Velocity += v2;
 			if (Velocity.X != 0 && Velocity.Y != 0)
-				Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 10;
+				Friction = Vector.Normalize(Velocity) * Mass * g * -Mu / 100;
 			DVelocity = Velocity * dt;
 			//Move(Velocity * dt);
 		}

@@ -115,6 +115,11 @@ namespace MyGeometry.Draw.Example
 			{
 				l -= 0.0001; //p.Size -= 0.1f;
 			}
+			if (game.Keyboard[Key.V])
+			{
+				Cir.Velocity = new Vector(0.5, 0);
+				BigCir.Velocity = new Vector(-0.5, 0);
+			}
 
 			Cir.Step0();
 			BigCir.Step0();
@@ -287,7 +292,7 @@ namespace MyGeometry.Draw.Example
 				IsOutline = true,
 				ColorOutline = System.Drawing.Color.DeepSkyBlue,
 				OutlineWidth = 3,
-				Mass = 10e8,
+				Mass = 5e8,
 				Forces = new Forces
 				{
 					["Main"] = new Vector(0, 0),
